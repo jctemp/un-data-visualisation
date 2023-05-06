@@ -4,3 +4,13 @@
 
   border: 1px solid red; 
 }
+
+svg {
+  background: #ddd;
+  margin: 0px auto;
+}
+
+/* colour only */
+.country {
+  stroke: #000;
+}
