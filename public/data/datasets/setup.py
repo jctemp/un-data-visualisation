@@ -15,14 +15,12 @@ files = [
     "https://data.un.org/_Docs/SYB/CSV/SYB65_1_202209_Population,%20Surface%20Area%20and%20Density.csv",
     "https://data.un.org/_Docs/SYB/CSV/SYB65_246_202209_Population%20Growth,%20Fertility%20and%20Mortality%20Indicators.csv",
     "https://data.un.org/_Docs/SYB/CSV/SYB65_230_202209_GDP%20and%20GDP%20Per%20Capita.csv",
-    "https://data.un.org/_Docs/SYB/CSV/SYB65_245_202209_Public%20expenditure%20on%20education.csv",
     "https://data.un.org/_Docs/SYB/CSV/SYB65_329_202209_Labour%20Force%20and%20Unemployment.csv",
-    "https://data.un.org/_Docs/SYB/CSV/SYB65_263_202209_Production,%20Trade%20and%20Supply%20of%20Energy.csv", # optional
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_263_202209_Production,%20Trade%20and%20Supply%20of%20Energy.csv",
     "https://data.un.org/_Docs/SYB/CSV/SYB65_328_202209_Intentional%20homicides%20and%20other%20crimes.csv",
     "https://data.un.org/_Docs/SYB/CSV/SYB65_145_202209_Land.csv",
     "https://data.un.org/_Docs/SYB/CSV/SYB65_310_202209_Carbon%20Dioxide%20Emission%20Estimates.csv",
     "https://data.un.org/_Docs/SYB/CSV/SYB65_315_202209_Water%20and%20Sanitation%20Services.csv",
-    "https://data.un.org/_Docs/SYB/CSV/SYB65_313_202209_Threatened%20Species.csv",
 ]
 
 # Pre-definitions
@@ -46,6 +44,8 @@ def write_dataframe(url: str) -> None:
         data = data.pivot(index="Id", columns="Year", values="Value")
         for c in data.columns:
             data.loc[:,c] = pd.to_numeric(data.loc[:,c].str.replace(",", "", regex=True))
+        if name[0] == "Threatened Species":
+            print(data.head())
         data.to_csv(f"{dest}/{name[0]}.csv")
 
 
