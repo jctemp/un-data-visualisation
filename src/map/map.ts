@@ -34,6 +34,16 @@ dataset.opts.forEach(year => {
 
 const atlas = new Atlas("atlas", null);
 
+new ResizeObserver(() => {
+    const width = atlas.svg.HTML.clientWidth;
+    const height = atlas.svg.HTML.clientHeight;
+    const projection = d3.geoNaturalEarth1()
+        .scale(width / (2 * Math.PI))
+        .translate([width / 2, height / 1.7])
+    atlas.settings?.pathGenerator.projection(projection)
+    atlas.update(data)
+}).observe(atlas.svg.HTML)
+
 const width = atlas.svg.HTML.clientWidth;
 const height = atlas.svg.HTML.clientHeight;
 
@@ -71,7 +81,7 @@ atlas.settings = {
 
 data.features.forEach(feature => {
     if (feature.properties) {
-        feature.properties["value"] =  NaN;
+        feature.properties["value"] = NaN;
     }
 })
 
