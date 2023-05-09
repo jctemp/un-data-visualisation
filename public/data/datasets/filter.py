@@ -14,4 +14,5 @@ for file in files:
     df = pd.read_csv(file)
     df = df[df["Id"].isin(whitelist)]
     df = df.dropna(axis=1, thresh=len(df) * .7)
+    df.set_index("Id", inplace=True)
     df.to_csv(file)
