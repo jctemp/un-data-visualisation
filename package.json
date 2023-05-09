@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/chart.js": "^2.9.37",
     "@types/d3": "^7.4.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.2"
   },
   "dependencies": {
+    "chart.js": "^4.3.0",
     "d3": "^7.8.4",
     "geojson": "^0.5.0"
   }

@@ -1,0 +1,9 @@
+.gitkeep
+GDP in constant 2010 prices (millions of US dollars)
+GDP in current prices (millions of US dollars)
+GDP per capita (US dollars)
+GDP real rates of growth (percent)
+_Id_Country_Map
+environment
+population
+setup

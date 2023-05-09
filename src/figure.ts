@@ -8,7 +8,10 @@ interface AtlasSVG {
 
 interface AtlasSettings {
     pathGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects>,
-    colorScale: d3.ScaleLogarithmic<any, any>,
+    colorScale: d3.ScaleLogarithmic<any, any>
+    | d3.ScalePower<any, any>
+    | d3.ScaleLinear<any, any>
+    | d3.ScaleThreshold<any, any>,
     property: string,
 }
 

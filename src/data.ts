@@ -55,10 +55,7 @@ interface Dataset {
  * @param resourcePath location of the dataset files.
  * @param dataset is the stem of the dataset file name.
  */
-async function datasetData(
-    resourcePath: string = "/data/datasets",
-    dataset: string = "Population mid-year estimates for males (millions)"
-): Promise<Dataset> {
+async function datasetData(resourcePath: string, dataset: string): Promise<Dataset> {
     const fullPath = `${resourcePath}/${dataset}.csv`;
     return d3.csv(fullPath)
         .then(data => {
@@ -75,5 +72,46 @@ async function datasetData(
         });
 }
 
-export { geoJsonData, datasetData };
-export type { Dataset };
+interface CountryIdMap {
+    country: Map<string, number>;
+    id: Map<number, string>;
+}
+
+/**
+ * # Summary
+ * `countryIdData` loads a dataset file from the specified resource path. The `.csv` file is expected
+ * to conform with the format `Id,Name`. See the example:
+ * 
+ * ```csv
+ * Id,Name
+ * 1,"Total, all countries or areas"
+ * 2,Africa
+ * 15,Northern Africa
+ * ```
+ * 
+ * Not conforming to the structure is undefined.
+ * 
+ * ## Params
+ * @param resourcePath location of the dataset files.
+ * @param dataset is the stem of the dataset file name.
+ */
+async function countryIdData(resourcePath: string, dataset: string): Promise<CountryIdMap> {
+    const fullPath = `${resourcePath}/${dataset}.csv`;
+    return d3.csv(fullPath)
+        .then(data => {
+            const ic = new Map();
+            const ci = new Map();
+
+            for (let index = 0; index < data.length; index++) {
+                const id = parseInt(data[index]["Id"] || "");
+                const name = data[index]["Name"];
+                ic.set(id, name);
+                ci.set(name, id);
+            }
+
+            return { id: ic, country: ci } as CountryIdMap;
+        });
+}
+
+export { geoJsonData, datasetData, countryIdData };
+export type { Dataset, CountryIdMap };

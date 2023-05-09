@@ -2,47 +2,75 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script type="module" src="/src/main.ts" defer></script>
-  <title>HCI Project</title>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="module" src="/src/main.ts" defer></script>
+    <title>UN Dataset</title>
 </head>
 
 <body>
 
-  <header>
-    <h1>United Nations</h1>
-    <nav>
-      <ul>
-        <li><a href="">Visualisation</a></li>
-        <li><a href="">About</a></li>
-      </ul>
-    </nav>
-  </header>
+    <header>
+        <div class="wrapper-heading">
+            <section aria-label="Heading">
+                <h1>UN Dataset</h1>
+                <nav aria-label="primary navbar">
+                    <ul>
+                        <li><a aria-selected="true" href="./index.html">World</a></li>
+                        <li><a href="./pages/countries.html">Countries</a></li>
+                        <li><a href="./pages/about.html">About</a></li>
+                    </ul>
+                </nav>
+            </section>
+        </div>
 
-  <main>
-    <section>
-      <h2>World Map</h2>
-      <select name="dataset" id="dataset-select">
-      </select>
-      <select name="year" id="year-select">
-      </select>
-      <svg id="atlas" style="aspect-ratio: 2.25 / 1"></svg>
-    </section>
+        <div class="wrapper-banner">
+            <section aria-label="banner">
+                <h2>World</h2>
+                <div aria-label="dataset configuration">
+                    <select name="dataset" id="dataset-select" aria-label="dataset"></select>
+                    <select name="year" id="year-select" aria-label="year"></select>
+                </div>
+            </section>
+        </div>
+    </header>
 
-    <section>
-      <h2>Ranking</h2>
-    </section>
+    <main>
+        <div class="wrapper">
+            <section aria-label="colored world map">
+                <h3>Map</h3>
+                <svg id="atlas" style="aspect-ratio: 2 / 1" aria-label="colored world map"></svg>
+            </section>
+        </div>
 
-    <section>
-      <h2>Rivials</h2>
-    </section>
-  </main>
+        <div class="wrapper">
+            <section aria-label="countries bar chart ranking">
+                <h3>Ranking</h3>
+                <canvas id="ranking"></canvas>
+            </section>
+        </div>
 
-  <footer>
-    Visit the <a href="">Github</a> repository.
-  </footer>
+        <div class="wrapper">
+            <section aria-label="two datasets plotted against each other">
+                <h3>Correlations</h3>
+                <div aria-label="first dataset configuration">
+                    <select name="first dataset" id="first-dataset-select" aria-label="dataset"></select>
+                    <select name="second dataset" id="second-dataset-select" aria-label="dataset"></select>
+                    <select name="year" id="year-select" aria-label="year"></select>
+                </div>
+                <canvas id="correlations"></canvas>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="wrapper-footer">
+            <section aria-label="GitHub reference">
+                Visit the <a href="">Github</a> repository.
+            </section>
+        </div>
+    </footer>
 </body>
 
 </html>
