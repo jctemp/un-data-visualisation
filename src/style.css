@@ -5,12 +5,9 @@
   --color-white: #ffffff;
   --color-black: #000000;
   --color-gray: #1c1917;
-  --color-casandora-yellow: #FFCB59;
-  --color-zinnia-gold: #FFD780;
-  --color-amarillo-bebito: #FFF1D4;
-  --color-fennel-flower: #80ACFF;
-  --color-adventure-of-the-seas: #3661B3;
-  --color-aurora-splendor: #565584;
+
+  --color-yellow: #FFD780;
+  --color-blue: #80ACFF;
 
   --color-900: #171717;
   --color-700: #404040;
@@ -97,12 +94,12 @@ nav a {
 }
 
 nav a[aria-selected="true"] {
-  color: var(--color-fennel-flower);
+  color: var(--color-yellow);
   text-decoration: overline;
 }
 
 nav a:hover {
-  color: var(--color-casandora-yellow);
+  color: var(--color-blue);
 }
 
 /* BANNER */

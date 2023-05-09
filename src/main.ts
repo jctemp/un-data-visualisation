@@ -1,35 +1,35 @@
 import './style.css'
 
-const options =
-  [
-    // "Infant mortality for both sexes (per 1,000 live births)",
-    // "Life expectancy at birth for both sexes (years)", // INCOME?
-    // "Population annual rate of increase (percent)",
+const optionsEcology = [
+  "Arable land (percent of total land area)",
+  "Emissions per capita (metric tons of carbon dioxide)",
+  "Forest cover (percent of total land area)",
+  "Important sites for terrestrial biodiversity protected (percent of total sites protected)",
+  "Land area (thousand hectares)",
+  "Permanent crops (percent of total land area)",
+]
 
-    // "Population aged 0 to 14 years old (percentage)",
-    // "Population aged 60+ years old (percentage)",
-    // "Population density",
-    // "Population mid-year estimates (millions)",
+const optionsEconomy = [
+  "Balance of Payments Current account (millions of US dollars)",
+  "Balance of Payments Financial account (millions of US dollars)",
+  "GDP per capita (US dollars)",
+  "GDP real rates of growth (percent)",
+  "Grants of patents (number)",
+]
 
-    // "Emissions per capita (metric tons of carbon dioxide)",
+const optionsPopulation = [
+  "Infant mortality for both sexes (per 1,000 live births)",
+  "Life expectancy at birth for both sexes (years)",
+  "Percentage of individuals using the internet",
+  "Population aged 0 to 14 years old (percentage)",
+  "Population aged 60+ years old (percentage)",
+  "Population annual rate of increase (percent)",
+  "Population density",
+  "Population mid-year estimates (millions)",
+]
 
-    // "Arable land (percentage of total land area)",
-    // "Forest cover (percentage  of total land area)",
-    // "Important sites for terrestrial biodiversity protected (percentage of total sites protected)",
-    // "Land area (thousand hectares)",
-
-    // "GDP per capita (US dollars)",
-    "GDP real rates of growth (percent)",
-  ]
 
 const dropdown = document.getElementById("dataset-select")
-
-options.forEach(elem => {
-  const opt = document.createElement("option");
-  opt.value = elem;
-  opt.innerText = elem;
-  dropdown?.append(opt);
-})
 
 import { Chart } from 'chart.js/auto';
 import * as d3 from "d3";
@@ -39,11 +39,11 @@ import { Atlas } from "./figure";
 // Load data
 const [data, dataset, countryIdMap] = await Promise.all([
   geoJsonData("/data/maps/world-atlas.geo.json", "value"),
-  datasetData("/data/datasets/economy", options[0]),
+  datasetData("/data/datasets/population", optionsPopulation[7]),
   countryIdData("/data/datasets", "_Id_Country_Map"),
 ]);
 
-let YEAR = 6;
+let YEAR = 0;
 const yearOptions = document.getElementById("year-select")
 if (yearOptions == null)
   throw Error("Houston we have a problem");
@@ -83,11 +83,15 @@ const projection = d3.geoNaturalEarth1()
   .translate([width / 2, height / 1.7])
 pathGenerator.projection(projection)
 
+const countries: any[] = []
+
 // Find valid range
 let min = Number.MAX_VALUE;
 let max = Number.MIN_VALUE;
 data.features.forEach(feature => {
   if (feature.properties) {
+    countries.push(parseInt(feature.properties["un_a3"]))
+    
     const entries = dataset.data.get(parseInt(feature.properties["un_a3"]));
     if (entries === undefined) return;
 
@@ -99,11 +103,16 @@ data.features.forEach(feature => {
   }
 })
 
+console.log(JSON.stringify(countries));
+
+
 // Color Scale
-// const color_scheme = ["#80ACFF", "#FFD780"];
-// const colorScale = d3.scaleLog<string, string>()
-//   .domain([min, max])
-//   .range(color_scheme);
+const bi_color_scheme = ["#80ACFF", "#FFD780"];
+const uni_color_yellow_scheme = ["#FFFFFF", "#FFD780"];
+const uni_color_blue_scheme = ["#80ACFF", "#FFFFFF"];
+const colorScale = d3.scaleLog<string, string>()
+  .domain([min, max])
+  .range(bi_color_scheme);
 
 // "Arable land (percentage of total land area)",
 // "Forest cover (percentage  of total land area)",
@@ -128,11 +137,17 @@ data.features.forEach(feature => {
 //
 // "GDP real rates of growth (percent)"
 // .domain([0, 5, 8, 10])
+//
+// "Balance of Payments Financial account (millions of US dollars)"
+// .domain([-5000, -2500, -1000, 0, 1000])
+//
+// "Balance of Payments Current account (millions of US dollars)"
+// .domain([-5000, -1000, 0, 1000, 5000])
 
-const schema_threshold = ["#3661B3", "#80ACFF", "#FFF1D4", "#FFD780", "#FFCB59"];
-const colorScale = d3.scaleThreshold<number, string>()
-  .domain([0, 5, 8, 10])
-  .range(schema_threshold);
+// const schema_threshold = ["#80ACFF", "#A4C0FF", "#C4D4FF", "#FFE9C4", "#FFE0A4", "#FFD780"];
+// const colorScale = d3.scaleThreshold<number, string>()
+//   .domain([-5000, -1000, 0, 1000, 5000])
+//   .range(schema_threshold);
 
 // Set atlas settings
 atlas.settings = {
