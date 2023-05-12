@@ -148,3 +148,15 @@ select[aria-label="dataset"] {
 .country {
   stroke: var(--color-black);
 }
+
+.flexing {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}

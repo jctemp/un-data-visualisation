@@ -1,4 +1,4 @@
-import './style.css';
+export {}
 
 const optionsEcology = [
     "Arable land (percent of total land area)",

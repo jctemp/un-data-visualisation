@@ -38,12 +38,14 @@ class Atlas {
             return;
         }
 
+        // @ts-ignore cannot infer type
         selection.join(
+            // @ts-ignore cannot infer type
             enter => enter
                 .append("path")
                 .classed("country", true)
                 .style("opacity", 1)
-                .style("stroke-width", ".05vh")
+                .style("stroke-width", ".5")
                 // @ts-ignore expects null but sets callback
                 .on("mouseover", this.countryMouseOver)
                 // @ts-ignore expects null but sets callback
@@ -55,7 +57,9 @@ class Atlas {
                     return this.transform(feature, this.settings!)
                 }),
             update => update
-                .attr("d", this.settings!.pathGenerator)
+                .transition()
+                .duration(300)
+                .ease(d3.easeBackInOut)
                 // @ts-ignore cannot infer type
                 .attr("fill", feature => {
                     return this.transform(feature, this.settings!)
@@ -70,7 +74,7 @@ class Atlas {
         feature: Feature<Geometry, GeoJsonProperties>, settings: AtlasSettings
     ): string | undefined {
         if (feature.properties) {
-            if (Number.isNaN(feature.properties[settings.property])) return "#333"
+            if (Number.isNaN(feature.properties[settings.property])) return "url(#nan-value)"
             return settings.colorScale(feature.properties[settings.property])
         }
     }
@@ -80,14 +84,14 @@ class Atlas {
             .transition()
             .duration(80)
             .style("opacity", ".2")
-            .style("stroke-width", ".0")
+            .style("stroke-width", "0")
 
         // @ts-ignore cannot infer type
         d3.select(d.target)
             .transition()
             .duration(80)
             .style("opacity", 1)
-            .style("stroke-width", ".12vh")
+            .style("stroke-width", "1")
     }
 
     private countryMouseLeave() {
@@ -95,7 +99,7 @@ class Atlas {
             .transition()
             .duration(240)
             .style("opacity", 1)
-            .style("stroke-width", ".05vh")
+            .style("stroke-width", ".5")
     }
 
     svg: AtlasSVG;

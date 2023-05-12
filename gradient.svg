@@ -1,0 +1,25 @@
+﻿
+			<svg width="800" height="200" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<rect width="800" height="200" fill="url(#gradient-fill)"/>
+				<defs>
+					<linearGradient id="gradient-fill" x1="0" y1="0" x2="800" y2="0" gradientUnits="userSpaceOnUse">
+						
+							<stop offset="0" stop-color="#5c5c5c" />
+						
+							<stop offset="0.14285714285714285" stop-color="#73685f" />
+						
+							<stop offset="0.2857142857142857" stop-color="#8a7461" />
+						
+							<stop offset="0.42857142857142855" stop-color="#a18164" />
+						
+							<stop offset="0.5714285714285714" stop-color="#b88e66" />
+						
+							<stop offset="0.7142857142857142" stop-color="#d09b68" />
+						
+							<stop offset="0.8571428571428571" stop-color="#e7a86a" />
+						
+							<stop offset="1" stop-color="#ffb56b" />
+						
+					</linearGradient>
+				</defs>
+			</svg>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="/src/world.ts" defer></script>
+    <script type="module" src="/src/main.ts" defer></script>
     <title>UN Dataset</title>
 </head>
 
@@ -17,9 +17,9 @@
                 <h1>UN Dataset</h1>
                 <nav aria-label="primary navbar">
                     <ul>
-                        <li><a aria-selected="true" href="./index.html">World</a></li>
-                        <li><a href="./pages/countries.html">Countries</a></li>
-                        <li><a href="./pages/about.html">About</a></li>
+                        <li><a aria-selected="true" href="/">World</a></li>
+                        <li><a href="/pages/countries.html">Countries</a></li>
+                        <li><a href="/pages/about.html">About</a></li>
                     </ul>
                 </nav>
             </section>
@@ -40,7 +40,44 @@
         <div class="wrapper">
             <section aria-label="colored world map">
                 <h3>Map</h3>
-                <svg id="atlas" style="aspect-ratio: 2 / 1" aria-label="colored world map"></svg>
+                <svg id="atlas" style="aspect-ratio: 2 / 1" aria-label="colored world map">
+                    <defs>
+                        <pattern id="nan-value" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
+                            <line x1="0" y="0" x2="0" y2="4" stroke="#3A3A3A" stroke-width="4" />
+                        </pattern>
+                    </defs>
+                </svg>
+                <!-- <div class="flexing">
+                    <div class="item">
+                        <input type="color" name="map-color-1" id="map-color-1" value="#80ACFF">
+                        <input type="number" name="map-threshold-1" id="map-threshold-1">
+                    </div>
+
+                    <div class="item">
+                        <input type="color" name="map-color-2" id="map-color-2" value="#A4C0FF">
+                        <input type="number" name="map-threshold-2" id="map-threshold-2">
+                    </div>
+
+                    <div class="item">
+                        <input type="color" name="map-color-3" id="map-color-3" value="#C4D4FF">
+                        <input type="number" name="map-threshold-3" id="map-threshold-3">
+                    </div>
+
+                    <div class="item">
+                        <input type="color" name="map-color-4" id="map-color-4" value="#FFE9C4">
+                        <input type="number" name="map-threshold-4" id="map-threshold-4">
+                    </div>
+
+                    <div class="item">
+                        <input type="color" name="map-color-5" id="map-color-5" value="#FFE0A4">
+                        <input type="number" name="map-threshold-5" id="map-threshold-5">
+                    </div>
+
+                    <div class="item">
+                        <td><input type="color" name="map-color-6" id="map-color-6" value="#FFD780">
+                        <td><input type="number" name="map-threshold-6" id="map-threshold-6">
+                    </div>
+                </div> -->
             </section>
         </div>
 
