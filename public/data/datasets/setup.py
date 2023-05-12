@@ -102,14 +102,14 @@ def write_dataframe(url: str) -> None:
 
         economy = True if name in optionsEconomy else False
         ecology = True if name in optionsEcology else False
-        population = True if name in optionsPopulation  else False
+        population = True if name in optionsPopulation else False
 
         if economy:
-            data.to_json("{}{}.json".format(dirs[1], name))
+            data.to_json("{}{}.json".format(dirs[1], name), orient='records')
         elif ecology:
-            data.to_json("{}{}.json".format(dirs[0], name))
+            data.to_json("{}{}.json".format(dirs[0], name), orient='records')
         elif population:
-            data.to_json("{}{}.json".format(dirs[2], name))
+            data.to_json("{}{}.json".format(dirs[2], name), orient='records')
 
 
 for url in tqdm.tqdm(files):

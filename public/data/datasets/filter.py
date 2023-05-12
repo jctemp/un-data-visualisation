@@ -13,4 +13,4 @@ for file in files:
     df = pd.read_json(file)
     df = df[df["Id"].isin(country_ids)]
     df = df.dropna(axis=1, thresh=len(df) * .7)
-    df.to_json(file)
+    df.to_json(file, orient='records')
