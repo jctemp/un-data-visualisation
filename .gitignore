@@ -25,3 +25,4 @@ dist-ssr
 
 # for now ignore all csv files
 *.csv
+!/public/data/datasets/Country Mapping.csv
