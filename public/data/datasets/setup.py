@@ -1,12 +1,7 @@
 import os
-import sys
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import tqdm
-
-if len(sys.argv) != 2:
-    raise ValueError("Missing destination.")
 
 dirs = ["./ecology/", "./economy/", "./population/"]
 
@@ -100,6 +95,7 @@ def write_dataframe(url: str) -> None:
         for c in data.columns:
             data.loc[:, c] = pd.to_numeric(
                 data.loc[:, c].str.replace(",", "", regex=True))
+        data = data.reset_index()
 
         name = name[0].replace(":", "")
         name = name.replace("%", "percent")
@@ -109,11 +105,11 @@ def write_dataframe(url: str) -> None:
         population = True if name in optionsPopulation  else False
 
         if economy:
-            data.to_csv("{}{}.csv".format(dirs[1], name))
+            data.to_json("{}{}.json".format(dirs[1], name))
         elif ecology:
-            data.to_csv("{}{}.csv".format(dirs[0], name))
+            data.to_json("{}{}.json".format(dirs[0], name))
         elif population:
-            data.to_csv("{}{}.csv".format(dirs[2], name))
+            data.to_json("{}{}.json".format(dirs[2], name))
 
 
 for url in tqdm.tqdm(files):
