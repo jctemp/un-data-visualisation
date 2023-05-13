@@ -1,0 +1,8 @@
+svg {
+    aspect-ratio: 2 / 1;
+}
+
+.country {
+    stroke: var(--color-black);
+    stroke-width: .5;
+}

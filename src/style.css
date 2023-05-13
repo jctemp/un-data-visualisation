@@ -145,9 +145,6 @@ select[aria-label="dataset"] {
 }
 
 /* MAP */
-.country {
-  stroke: var(--color-black);
-}
 
 .flexing {
   display: flex;
