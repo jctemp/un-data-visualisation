@@ -10,7 +10,7 @@ const ids = await loadCountryIds("/data/datasets", "Country Ids.json");
 const dataset = await loadDataset("/data/datasets/population", `${DATASET_NAME}.json`);
 const geoData = await geo.load("/data", "world.geo.json", "value");
 
-if (geoData == null || dataset == null) throw Error("Du bastard");
+if (geoData == null || dataset == null || ids == null) throw Error("Du bastard");
 
 geoData.forEach(feature => feature.properties.geo_id = ids?.get(feature.properties["name"]) || "-1");
 
