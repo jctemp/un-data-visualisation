@@ -132,28 +132,10 @@ section[aria-label="GitHub reference"] a {
   margin: 0 .25rem;
 }
 
-/* SELECTION */
+/* SELECT */
 
 select {
   padding: .25rem 1rem;
   border-radius: .2rem;
   font-weight: 500;
-}
-
-select[aria-label="dataset"] {
-  width: clamp(10ch, 20ch, 30ch);
-}
-
-/* MAP */
-
-.flexing {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.item {
-  display: flex;
-  flex-direction: column;
-  gap: .25rem;
 }

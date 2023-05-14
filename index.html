@@ -28,9 +28,11 @@
         <div class="wrapper-banner">
             <section aria-label="banner">
                 <h2>World</h2>
-                <div aria-label="dataset configuration">
-                    <select name="dataset" id="dataset-select" aria-label="dataset"></select>
-                    <select name="year" id="year-select" aria-label="year"> </select>
+                <div class="dataset-selection" aria-label="dataset configuration">
+                    <select name="dataset" id="dataset-select" aria-label="dataset">
+                    </select>
+                    <select name="year" id="year-select" aria-label="year">
+                    </select>
                 </div>
             </section>
         </div>
@@ -40,7 +42,7 @@
         <div class="wrapper">
             <section aria-label="colored world map">
                 <h3>Map</h3>
-                <svg id="map" ariaLabel = "colored world map">
+                <svg id="map" ariaLabel="colored world map">
                     <defs>
                         <pattern id="unknown" patternUnits="userSpaceOnUse" width="4" height="4"
                             patternTransform="rotate(45)">
