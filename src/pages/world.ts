@@ -1,268 +1,162 @@
-// ======================================================================================
-// DATASET
-
-import { Chart } from 'chart.js/auto';
 import * as d3 from "d3";
-import { datasetData, geoJsonData } from "../utils/data";
-import { Atlas } from "../utils/map";
 
-// ======================================================================================
-// CREATE WORLD MAP
+import { ColourSchemes, DatasetOptions } from "../constants";
 
-// Load data
-const data = await geoJsonData("/data/maps/world-atlas.geo.json", "value");
+import { WorldMap } from "../components/worldMap";
+import { CountryIds, Dataset } from "../utils/dataset";
 
-let DATASET_YEAR_INDEX = 1;
-let DATASET_MIN_VALUE = Number.MAX_VALUE;
-let DATASET_MAX_VALUE = Number.MIN_VALUE;
+import { Selection } from "../components/selection";
+import { Threshold } from "../components/threshold";
 
-let colorScale = d3.scaleLog<string, string>();
+// ====================================================================================================
+// Create the world map and load an initial dataset
 
-data.features.forEach(feature => {
-    if (feature.properties) {
-        feature.properties["value"] = NaN;
-    }
+let [worldMap, dataset, ids] = await Promise.all([
+    WorldMap.init({
+        mapId: "map",
+        mapTooltipId: "map-tooltip",
+        resourcePath: "/data",
+        resource: "world",
+    }),
+    Dataset.init(DatasetOptions.paths[0], DatasetOptions.ecology[0]),
+    CountryIds.init("/data/datasets", "Country Ids"),
+]);
+
+worldMap.setCountryIds(ids);
+
+// ====================================================================================================
+// Create the dataset selection
+
+let datasetSelection = new Selection({
+    parentId: "map-actions",
+    selectName: "Dataset",
+    options: [
+        ["Ecology", DatasetOptions.ecology],
+        ["Economy", DatasetOptions.economy],
+        ["Population", DatasetOptions.population],
+    ],
+    useOptionsGroups: true,
 });
 
-const atlas = new Atlas("atlas", null);
-new ResizeObserver(() => {
-    const width = atlas.svg.HTML.clientWidth;
-    const height = atlas.svg.HTML.clientHeight;
-    const projection = d3.geoNaturalEarth1()
-        .scale(width / (2 * Math.PI))
-        .translate([width / 2, height / 1.7])
-    atlas.settings?.pathGenerator.projection(projection)
-    atlas.update(data)
-}).observe(atlas.svg.HTML)
+let datasetYearSelection = new Selection({
+    parentId: "map-actions",
+    selectName: "Dataset Year",
+    options: dataset.years.map(year => year.toString()),
+    useOptionsGroups: false,
+});
 
-const width = atlas.svg.HTML.clientWidth;
-const height = atlas.svg.HTML.clientHeight;
+datasetSelection.element.onchange = async () => {
+    // 1. get selected option and path
+    const selectedOption = datasetSelection.element.value;
+    const path = DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedOption)!];
 
-// Map and projection
-const pathGenerator = d3.geoPath();
-const projection = d3.geoNaturalEarth1()
-    .scale(width / (2 * Math.PI))
-    .translate([width / 2, height / 1.7])
-pathGenerator.projection(projection)
+    // 2. load dataset and update dataset year selection
+    await dataset.load(path, selectedOption);
+    datasetYearSelection.update(dataset.years.map(year => year.toString()));
 
-atlas.settings = {
-    pathGenerator, colorScale, property: "value"
+    const [preferredColourScheme, preferredScale] = DatasetOptions.colourMapping.get(selectedOption)!;
+
+    // 3. update world map
+    worldMap.updateData(dataset.byYear(dataset.years[0].toString())!);
+    worldMap.scaleColorScheme = preferredColourScheme;
+    scaleSelection.element.value = preferredScale;
+    worldMap.scaleType = preferredScale;
+    threshold.hide();
+
+    // 4. create a linear scale if the values are negative otherwise a log scale
+    if (preferredScale === "Logarithmic")
+        worldMap.scale = d3.scaleLog<any>()
+            .domain(worldMap.scaleRange)
+            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+    else
+        worldMap.scale = d3.scaleLinear<any>()
+            .domain(worldMap.scaleRange)
+            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+
+    // 5. update world map
+    worldMap.updateChart();
 };
 
-atlas.update(data);
+datasetYearSelection.element.onchange = () => {
+    // 1. get selected option
+    const selectedOption = datasetYearSelection.element.value;
 
-// ======================================================================================
-// DATA LOADING
-
-const BI_COLOR_SCHEME = ["#80ACFF", "#FFD780"];
-const UNI_COLOR_SCHEME_YELLOW = ["#FFFFFF", "#FFD780"];
-
-function datasetScales(values: number[]): d3.ScaleLogarithmic<any, any> | d3.ScaleLinear<any, any> | null {
-    console.log(values);
-
-    // ECOLOGY
-    if (DATASET_NAME === "Arable land (percent of total land area)" ||
-        DATASET_NAME === "Emissions per capita (metric tons of carbon dioxide)" ||
-        DATASET_NAME === "Forest cover (percent of total land area)" ||
-        DATASET_NAME === "Important sites for terrestrial biodiversity protected (percent of total sites protected)"
-    ) {
-        const [min, max] = values;
-        const offset = (max - min) * .7;
-        return d3.scaleLinear<string, string>()
-            .domain([min, max - offset])
-            .range(UNI_COLOR_SCHEME_YELLOW);
-    }
-
-    if (DATASET_NAME === "Permanent crops (percent of total land area)") {
-        const [min, max] = values;
-        const offset = (max - min) * .99;
-        return d3.scaleLog<string, string>()
-            .domain([min, max - offset])
-            .range(UNI_COLOR_SCHEME_YELLOW);
-    }
-
-    // ECONOMY
-    if (DATASET_NAME === "Balance of Payments Current account (millions of US dollars)") {
-        const [min, max] = values;
-        const offset = (max - min) * .4;
-        return d3.scaleLinear<string, string>()
-            .domain([min + offset, max])
-            .range(BI_COLOR_SCHEME);
-    }
-
-    if (DATASET_NAME === "Balance of Payments Financial account (millions of US dollars)") {
-        const [min, max] = values;
-        const offset = (max - min) * .4;
-        return d3.scaleLinear<string, string>()
-            .domain([min + offset, max])
-            .range(BI_COLOR_SCHEME);
-    }
-
-    if (DATASET_NAME === "GDP per capita (US dollars)") {
-        const [min, max] = values;
-        const offset = (max - min) * .85;
-        return d3.scaleLinear<string, string>()
-            .domain([min, max - offset])
-            .range(UNI_COLOR_SCHEME_YELLOW);
-    }
-
-    if (DATASET_NAME === "GDP real rates of growth (percent)") {
-        const [min, max] = values;
-        const offset = (max - min) * .2;
-        return d3.scaleLinear<string, string>()
-            .domain([min + offset, max])
-            .range(BI_COLOR_SCHEME);
-    }
-
-    
-    if (DATASET_NAME === "Grants of patents (number)") {
-        const [min, max] = values;
-        const offset = (max - min) * .7;
-        return d3.scaleLog<string, string>()
-            .domain([min, max - offset])
-            .range(UNI_COLOR_SCHEME_YELLOW);
-    }
-
-    if (
-        DATASET_NAME === "Percentage of individuals using the internet" ||
-        DATASET_NAME === "Population aged 0 to 14 years old (percentage)" ||
-        DATASET_NAME === "Population aged 60+ years old (percentage)" ||
-        DATASET_NAME === "Population annual rate of increase (percent)"
-    ) {
-        return d3.scaleLinear<string, string>()
-            .domain([0, 100])
-            .range(UNI_COLOR_SCHEME_YELLOW);
-    }
-
-    if (
-        DATASET_NAME === "Infant mortality for both sexes (per 1,000 live births)" ||
-        DATASET_NAME === "Life expectancy at birth for both sexes (years)" ||
-        DATASET_NAME === "Population density" ||
-        DATASET_NAME === "Population mid-year estimates (millions)"
-    ) {
-        return d3.scaleLog<string, string>()
-            .domain(values)
-            .range(BI_COLOR_SCHEME);
-    }
-
-    return null;
+    // 2. update world map
+    worldMap.updateData(dataset.byYear(selectedOption)!);
+    worldMap.updateChart();
 }
 
-let rankingchart: Chart<any> | null = null;
+// ====================================================================================================
+// Scale selection
 
-async function callbackMap() {
-    // fetch data
-    const dataset = await datasetData(DATASET_PATH, DATASET_NAME);
+let scaleSelection = new Selection({
+    parentId: "map-actions",
+    selectName: "Scale Type",
+    options: ["Linear", "Logarithmic", "Threshold"],
+    useOptionsGroups: false,
+});
+const threshold = new Threshold("threshold-selection",
+    ColourSchemes.threshold.reverse().map((v, i) => [ColourSchemes.threshold.length - i, v]));
 
-    // fetch year select
-    const dropdownYear = document.getElementById("year-select") as HTMLSelectElement | null;
-    if (dropdownYear == null)
-        throw Error("Houston, we've got a problem.");
+threshold.setCallback(() => {
+    console.log(threshold.getThresholds());
+    console.log(threshold.getColours());
+    worldMap.scale = d3.scaleThreshold<any, any>()
+        .domain(threshold.getThresholds())
+        .range(threshold.getColours());
+    worldMap.updateChart();
+});
 
-    // remove existing year options
-    while (dropdownYear.firstChild) {
-        dropdownYear.removeChild(dropdownYear.lastChild!);
-    }
+scaleSelection.element.onchange = () => {
+    worldMap.scaleType = scaleSelection.element.value;
 
-    // set new year options
-    dataset.opts.forEach((year, index) => {
-        if (isNaN(year)) return;
-        if (index == 1) DATASET_YEAR_INDEX = index;
-        const opt = document.createElement("option");
-        opt.value = index.toString();
-        opt.innerText = year.toString();
-        dropdownYear.append(opt);
-        dropdownYear.onchange = _ => {
-            DATASET_YEAR_INDEX = parseInt(dropdownYear.value);
+    if (worldMap.scaleType === "Threshold") threshold.show();
+    else threshold.hide();
 
-            // find valid range
-            DATASET_MIN_VALUE = Number.MAX_VALUE;
-            DATASET_MAX_VALUE = Number.MIN_VALUE;
-            data.features.forEach(feature => {
-                if (feature.properties) {
-                    const entries = dataset.data.get(parseInt(feature.properties["un_a3"]));
-                    if (entries === undefined) return;
+    if (worldMap.scaleType !== "Threshold" && worldMap.scaleRange[0] < 0)
+        scaleSelection.element.value = "Linear";
 
-                    const value = entries?.get(dataset.opts[DATASET_YEAR_INDEX]) || NaN;
-                    if (value === undefined) return;
+    // TODO: Balance of Payments power scale or something like this
+    // TODO: Mutliple datasets have weird values -> manual fix them (most are economy, some in population)
+    if (worldMap.scaleType === "Threshold") {
 
-                    feature.properties["value"] = value;
+        const [min, max] = worldMap.scaleRange;
+        const scaleType = DatasetOptions.colourMapping.get(dataset.name)![1];
 
-                    if (value < DATASET_MIN_VALUE) DATASET_MIN_VALUE = value;
-                    if (value > DATASET_MAX_VALUE) DATASET_MAX_VALUE = value;
-                }
-            });
+        threshold.setRange([min, max]);
 
-            // Set atlas settings
-            atlas.settings = {
-                pathGenerator,
-                colorScale: datasetScales([DATASET_MIN_VALUE, DATASET_MAX_VALUE])!,
-                property: "value"
-            };
+        let values = d3.range(min, max, (max - min) / ColourSchemes.threshold.length);
+        if (scaleType === "Logarithmic") {
+            let exponents = values.map(v => Math.log(v));
+            let minExp = 0;
+            let maxExp = Math.ceil(Math.max(...exponents));
 
-            atlas.update(data);
+            values = d3.range(minExp, maxExp, (maxExp - minExp) / ColourSchemes.threshold.length)
+                .map(v => Math.exp(v));
         }
-    });
+        values = values.map(v => Math.round(v));
+        console.log(values);
 
-    // find valid range and set values
-    DATASET_MIN_VALUE = Number.MAX_VALUE;
-    DATASET_MAX_VALUE = Number.MIN_VALUE;
+        threshold.setThresholds(values);
 
-    data.features.forEach(feature => {
-        if (feature.properties) {
-            const country = dataset.data.get(parseInt(feature.properties["un_a3"]));
-            if (country === undefined) return;
+        worldMap.scale = d3.scaleThreshold<any, any>()
+            .domain(threshold.getThresholds())
+            .range(threshold.getColours());
+    } else if (worldMap.scaleType === "Logarithmic")
+        worldMap.scale = d3.scaleLog<any>()
+            .domain(worldMap.scaleRange)
+            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+    else
+        worldMap.scale = d3.scaleLinear<any>()
+            .domain(worldMap.scaleRange)
+            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
 
-            const value = country?.get(dataset.opts[DATASET_YEAR_INDEX]) || NaN;
-            if (value === undefined) return;
+    worldMap.updateChart();
+};
 
-            feature.properties["value"] = value;
-
-            if (value < DATASET_MIN_VALUE) DATASET_MIN_VALUE = value;
-            if (value > DATASET_MAX_VALUE) DATASET_MAX_VALUE = value;
-        }
-    })
-
-    if (DATASET_MAX_VALUE == Number.MIN_VALUE) {
-        console.log(dataset);
-    }
-
-
-    // Set atlas settings
-    atlas.settings = {
-        pathGenerator,
-        colorScale: datasetScales([DATASET_MIN_VALUE, DATASET_MAX_VALUE])!,
-        property: "value"
-    };
-
-    atlas.update(data);
-
-    // const ranking = document.getElementById("ranking") as HTMLCanvasElement | null;
-    // if (ranking == null) throw Error("Deine Mama")
-
-    // dataset.data = new Map([...dataset.data].sort((a, b) => (b[1].get(dataset.opts[1]) || 0) - (a[1].get(dataset.opts[1]) || 0)))
-
-    // if (rankingchart != null) {
-    //     rankingchart.destroy();
-    // }
-
-    // rankingchart = new Chart(ranking, {
-    //     type: "bar",
-    //     data: {
-    //         labels: Array.from(dataset.data.keys()).slice(0, 100),
-    //         datasets: [
-    //             {
-    //                 label: '',
-    //                 data: Array.from(dataset.data.values()).slice(0, 100).map(entry => entry.get(dataset.opts[1])),
-    //                 backgroundColor: "#80ACFF",
-    //             }
-    //         ]
-    //     }
-    // });
-
-}
-
-callbackMap()
-
-dropdownMain.addEventListener("change", callbackMap);
-dropdownScatterFirst.addEventListener("change", callbackMap);
+// ====================================================================================================
+worldMap.updateData(dataset.byYear(dataset.years[0].toString())!);
+worldMap.scale = d3.scaleLinear<any>()
+    .domain(worldMap.scaleRange)
+    .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+worldMap.updateChart();

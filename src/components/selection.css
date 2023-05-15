@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .selection {
+        @apply px-1 py-2 font-semibold border border-black rounded-sm text-ellipsis min-w-0;
+    }
+}

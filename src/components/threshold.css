@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .threshold-container {
+        @apply absolute right-16 top-24;
+        @apply aria-disabled:-right-40 aria-disabled:hidden;
+
+        @apply flex gap-2 flex-wrap justify-start flex-row-reverse;
+        @apply xl:flex-col xl:items-end;
+
+        @apply relative top-0 right-0 mt-2;
+        @apply xl:absolute xl:top-40 xl:right-16;
+
+        @apply transition-all duration-200;
+    }
+
+    .threshold-label {
+        @apply font-semibold
+    }
+
+    .threshold-tuple {
+        @apply flex items-center gap-1 p-1;
+        @apply border;
+    }
+
+    .threshold-number {
+        @apply border-none p-1 font-semibold w-24 h-8;
+    }
+
+    .threshold-colour-after {
+        @apply border-l-0 rounded-l-none;
+    }
+}

@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .toggle-button {
+        @apply px-1 py-2 font-semibold border border-black rounded-sm text-ellipsis min-w-0;
+
+    }
+}

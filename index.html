@@ -2,84 +2,61 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="/src/main.ts" defer></script>
-    <title>UN Dataset</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/public/logo.png" type="image/x-icon">
+  <script type="module" src="./src/main.ts"></script>
+  <title>UN Dataset</title>
 </head>
 
 <body>
+  <header class="align bg-zinc-900 text-white font-bold shadow-lg flex flex-wrap justify-between items-center gap-8">
+    <h1 class="text-4xl">UN Dataset</h1>
+    <nav class="text-lg flex gap-4">
+      <ul class="contents">
+        <li><a aria-current="page" href="" class="nav-link">World</a></li>
+        <li><a href="" class="nav-link">Country</a></li>
+        <li><a href="" class="nav-link">About</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <header>
-        <div class="wrapper-heading">
-            <section aria-label="Heading">
-                <h1>UN Dataset</h1>
-                <nav aria-label="primary navbar">
-                    <ul>
-                        <li><a aria-selected="true" href="/">World</a></li>
-                        <li><a href="/pages/countries.html">Countries</a></li>
-                        <li><a href="/pages/about.html">About</a></li>
-                    </ul>
-                </nav>
-            </section>
-        </div>
+  <main>
+    <section class="align odd:bg-zinc-700 text-white" aria-label="Banner of the pages.">
+      <h2 class="text-2xl font-bold">World</h2>
+    </section>
 
-        <div class="wrapper-banner">
-            <section aria-label="banner">
-                <h2>World</h2>
-                <div class="dataset-selection" aria-label="dataset configuration">
-                    <select name="dataset" id="dataset-select" aria-label="dataset">
-                    </select>
-                    <select name="year" id="year-select" aria-label="year">
-                    </select>
-                </div>
-            </section>
-        </div>
-    </header>
+    <!-- WORLD MAP SECTION -->
+    <section class="align odd:bg-zinc-200 relative" aria-label="A colored world map that displays dataset values.">
+      <div class="flex gap-2 justify-end flex-wrap" id="map-actions"></div>
+      <span id="map-tooltip"></span>
+      <svg class="max-w-screen-2xl m-auto" id="map">
+        <defs>
+          <pattern id="unknown" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
+            <line x1="0" y="0" x2="0" y2="4" stroke="#3A3A3A" stroke-width="4" />
+          </pattern>
+          <pattern id="null" patternUnits="userSpaceOnUse" width="23" height="23" patternTransform="rotate(45)">
+            <line x1="0" y="0" x2="0" y2="23" stroke="#2700DD" stroke-width="30" />
+          </pattern>
+      </svg>
+      <div aria-disabled="true" id="threshold-selection"></div>
+    </section>
 
-    <main>
-        <div class="wrapper">
-            <section aria-label="colored world map">
-                <h3>Map</h3>
-                <svg id="map" ariaLabel="colored world map">
-                    <defs>
-                        <pattern id="unknown" patternUnits="userSpaceOnUse" width="4" height="4"
-                            patternTransform="rotate(45)">
-                            <line x1="0" y="0" x2="0" y2="4" stroke="#3A3A3A" stroke-width="4" />
-                        </pattern>
-                    </defs>
-                </svg>
-            </section>
-        </div>
+    <!-- RANKING SECTION -->
+    <section class="align odd:bg-zinc-100" aria-label="A bar charts thats shows a top n ranking of countries.">
+      <canvas class="max-w-screen-2xl m-auto" id="ranking"></canvas>
+    </section>
 
-        <div class="wrapper">
-            <section aria-label="countries bar chart ranking">
-                <h3>Ranking</h3>
-                <canvas id="ranking"></canvas>
-            </section>
-        </div>
+    <!-- MORE SECTION -->
+    <section class="align odd:bg-zinc-100" aria-label="">
+      <canvas class="max-w-screen-2xl m-auto" id="ranking"></canvas>
+    </section>
+  </main>
 
-        <div class="wrapper">
-            <section aria-label="two datasets plotted against each other">
-                <h3>Correlations</h3>
-                <div aria-label="first dataset configuration">
-                    <select name="first dataset" id="first-dataset-select" aria-label="dataset"></select>
-                    <select name="second dataset" id="second-dataset-select" aria-label="dataset"></select>
-                    <select name="year" id="year-select" aria-label="year"></select>
-                </div>
-                <canvas id="correlations"></canvas>
-            </section>
-        </div>
-    </main>
-
-    <footer>
-        <div class="wrapper-footer">
-            <section aria-label="GitHub reference">
-                Visit the <a href="">Github</a> repository.
-            </section>
-        </div>
-    </footer>
+  <footer class="align bg-zinc-900 text-white">
+    Visit the <a href="" class="font-bold">Github</a> repository.
+  </footer>
 </body>
 
 </html>
