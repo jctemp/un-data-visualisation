@@ -116,10 +116,10 @@ class Dataset {
      * country ids to a singular value.
      * @param year is a value provided in the `Dataset` type.
      */
-    public byYear(year: string): Map<string, number> | null {
-        if (this.years.findIndex(value => value === Number(year)) == -1) return null;
+    public byYear(year: number): Map<string, number> | null {
+        if (this.years.findIndex(value => value === year) == -1) return null;
         return Array.from(this.data.entries())
-            .map(tuple => ({ id: tuple[0], values: tuple[1].get(Number(year))! }))
+            .map(tuple => ({ id: tuple[0], values: tuple[1].get(year)! }))
             .reduce((map, objectSlice) => map.set(objectSlice.id, objectSlice.values),
                 new Map<string, number>());
     }

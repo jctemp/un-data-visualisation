@@ -24,12 +24,15 @@
 
   <main>
     <section class="align odd:bg-zinc-700 text-white" aria-label="Banner of the pages.">
-      <h2 class="text-2xl font-bold">World</h2>
+      <h2 class="text-3xl font-bold">World</h2>
     </section>
 
     <!-- WORLD MAP SECTION -->
     <section class="align odd:bg-zinc-100 relative" aria-label="A colored world map that displays dataset values.">
-      <div class="flex gap-2 justify-end flex-wrap" id="map-actions"></div>
+      <div class="flex justify-between items-baseline flex-wrap">
+        <h2 class="text-2xl font-bold pb-8">Map</h2>
+        <div class="flex gap-2 justify-end flex-wrap" id="map-actions"></div>
+      </div>
       <span id="map-tooltip"></span>
       <svg class="max-w-screen-2xl m-auto" id="map">
         <defs>
@@ -45,24 +48,32 @@
 
     <!-- RANKING SECTION -->
     <section class="align odd:bg-zinc-100" aria-label="A bar charts thats shows a top n ranking of countries.">
-      <div class="chart max-w-screen-lg m-auto">
+      <div class="flex justify-between items-baseline flex-wrap">
+        <h2 class="text-2xl font-bold pb-8">Ranking</h2>
+        <div class="flex gap-2 justify-end flex-wrap" id="ranking-actions"></div>
+      </div>
+      <div class="chart2x1 max-w-screen-lg m-auto">
         <canvas id="ranking"></canvas>
       </div>
     </section>
 
     <!-- MORE SECTION -->
     <section class="align odd:bg-zinc-100 p-8" aria-label="">
-      <div class="chart max-w-screen-lg m-auto">
-        <canvas id="scatter"></canvas>
+      <div class="flex justify-between items-baseline flex-wrap">
+        <h2 class="text-2xl font-bold pb-8">Correlation</h2>
+        <div class="flex gap-2 justify-end flex-wrap" id="correlation-actions"></div>
+      </div>
+      <div class="chart2x1 max-w-screen-lg m-auto">
+        <canvas id="correlation"></canvas>
       </div>
     </section>
 
-    <!-- MORE SECTION -->
-    <section class="align odd:bg-zinc-100 p-8" aria-label="">
-      <div class="chart max-w-screen-lg m-auto">
-        <canvas id="radar"></canvas>
-      </div>
-    </section>
+    <!-- MORE SECTION
+        <section class="align odd:bg-zinc-100 p-8" aria-label="">
+          <div class="chart1x1 max-w-screen-lg m-auto">
+            <canvas id="radar"></canvas>
+          </div>
+        </section> -->
   </main>
 
   <footer class="align bg-zinc-900 text-white">

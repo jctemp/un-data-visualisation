@@ -1,27 +1,61 @@
 import "./chart.css";
+
+import { Dataset } from "../utils/dataset";
 import Chart from 'chart.js/auto';
 
+class Converter {
+    constructor(mapping: Map<string, string>) {
+        this.mapping = mapping;
+    }
+
+    toChartDataset(ds: Dataset, year: number, limit: number = -1): ChartDataset<number> {
+        let data = ds.byYear(year);
+
+        if (data === null) {
+            return {
+                prefix: ds.name,
+                labels: [],
+                data: [],
+                borderWidth: 1,
+            };
+        }
+
+        let working = Array.from(data.entries());
+        working = working.filter(a => !isNaN(a[1]));
+        working.sort((a, b) => b[1] - a[1]);
+        if (limit > 0) working = working.slice(0, limit);
+        data = new Map(working);
+
+        return {
+            prefix: ds.name,
+            labels: Array.from(data.keys()).map(id => this.mapping.get(id)!),
+            data: Array.from(data.values()),
+            borderWidth: 1,
+        };
+    }
+
+    mapping: Map<string, string>;
+}
+
+
+
 interface ChartDataset<T> {
-    title: string;
-    labels: string[];
-    data: T[];
+    prefix: string,
+    labels: string[],
+    data: T[],
+    borderWidth: number,
 }
 
 class BarChart {
-    constructor(elementId: string, ds: ChartDataset<number>, showGrid: boolean) {
-
+    constructor(elementId: string, showGrid: boolean) {
         let html = document.getElementById(elementId) as HTMLCanvasElement | null;
         if (html === null) throw new Error("Could not find ranking canvas");
 
-        let chart = new Chart(html, {
+        this.chart = new Chart(html, {
             type: "bar",
             data: {
-                labels: ds.labels,
-                datasets: [{
-                    label: ds.title,
-                    data: ds.data,
-                    borderWidth: 1
-                }]
+                labels: [],
+                datasets: []
             },
             options: {
                 plugins: {
@@ -47,121 +81,18 @@ class BarChart {
         });
 
     }
-}
 
-const barDs: ChartDataset<number> = {
-    title: "Acquisitions by year",
-    labels: ["A", "B", "C", "D", "E", "F", "G"],
-    data: [1, 2, 3, 4, 5, 6, 7]
-}
-
-new BarChart("ranking", barDs, true);
-
-class ScatterChart {
-    constructor(elementId: string, ds: ChartDataset<[number, number]>, showGrid: boolean) {
-
-        let html = document.getElementById(elementId) as HTMLCanvasElement | null;
-        if (html === null) throw new Error("Could not find ranking canvas");
-
-        let chart = new Chart(html, {
-            type: "scatter",
-            data: {
-                labels: ds.labels,
-                datasets: [{
-                    label: ds.title,
-                    data: ds.data,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            display: showGrid
-                        }
-                    },
-                    y: {
-                        grid: {
-                            display: showGrid
-                        }
-                    }
-                }
-            }
-        });
-
+    public update(ds: ChartDataset<number>) {
+        this.chart.data.labels = ds.labels;
+        this.chart.data.datasets = [{
+            label: ds.prefix,
+            data: ds.data,
+            borderWidth: 1
+        }];
+        this.chart.update();
     }
+
+    chart: Chart<"bar", number[], string>;
 }
 
-const scatterDs: ChartDataset<[number, number]> = {
-    title: "Acquisitions by year",
-    labels: ["A", "B", "C", "D", "E", "F", "G"],
-    data: [[1, 2], [1, 3], [2, 4], [2, 1], [2, 2], [4, 4]]
-}
-
-new ScatterChart("scatter", scatterDs, true);
-
-class RadarChart {
-    constructor(elementId: string, dsArray: ChartDataset<number>[], showGrid: boolean) {
-
-        let html = document.getElementById(elementId) as HTMLCanvasElement | null;
-        if (html === null) throw new Error("Could not find ranking canvas");
-
-        let chart = new Chart(html, {
-            type: "radar",
-            data: {
-                labels: dsArray[0].labels,
-                datasets: dsArray.map(ds => {
-                    return {
-                        label: ds.title,
-                        data: ds.data,
-                        borderWidth: 1
-                    }
-                })
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            display: showGrid
-                        }
-                    },
-                    y: {
-                        grid: {
-                            display: showGrid
-                        }
-                    }
-                }
-            }
-        });
-
-    }
-}
-
-const radarDs1: ChartDataset<number>[] = [
-    {
-        title: "County A",
-        labels: ["Growth", "Value", "Land", "Other", "Internet", "Fancy", "Gain"],
-        data: [1, 2, 5, -2, 1, 0, 7].reverse()
-    },
-    {
-        title: "County B",
-        labels: [],
-        data: [1, 0, 3, 6, 5, 3, 3]
-    },
-];
-
-new RadarChart("radar", radarDs1, true);
+export { BarChart, Converter };

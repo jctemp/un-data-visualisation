@@ -3,12 +3,11 @@ import * as d3 from "d3";
 import { ColourSchemes, DatasetOptions } from "../constants";
 
 import { WorldMap } from "../components/worldMap";
+import { BarChart, Converter } from "../components/chart";
 import { CountryIds, Dataset } from "../utils/dataset";
 
 import { Selection } from "../components/selection";
-import { Threshold } from "../components/threshold";
-
-import "../components/chart";
+import { Threshold, ThresholdNumber } from "../components/threshold";
 
 // ====================================================================================================
 // Create the world map and load an initial dataset
@@ -23,8 +22,22 @@ let [worldMap, dataset, ids] = await Promise.all([
     Dataset.init(DatasetOptions.paths[0], DatasetOptions.ecology[0]),
     CountryIds.init("/data/datasets", "Country Ids"),
 ]);
+let countries = new Map<string, string>();
+ids.map.forEach((a, b) => countries.set(a, b));
 
 worldMap.setCountryIds(ids);
+
+let converter = new Converter(countries);
+let ranking = new BarChart("ranking", true);
+
+// ====================================================================================================
+// Ranking threshold
+const rankingThreshold = new ThresholdNumber("ranking-actions", [10, 100], "Top ");
+
+rankingThreshold.setCallback(() => {
+    let limit = Number(rankingThreshold.control.value);
+    ranking.update(converter.toChartDataset(dataset, Number(datasetYearSelection.element.value), limit));
+});
 
 // ====================================================================================================
 // Create the dataset selection
@@ -59,7 +72,7 @@ datasetSelection.element.onchange = async () => {
     const [preferredColourScheme, preferredScale] = DatasetOptions.colourMapping.get(selectedOption)!;
 
     // 3. update world map
-    worldMap.updateData(dataset.byYear(dataset.years[0].toString())!);
+    worldMap.updateData(dataset.byYear(dataset.years[0])!);
     worldMap.scaleColorScheme = preferredColourScheme;
     scaleSelection.element.value = preferredScale;
     worldMap.scaleType = preferredScale;
@@ -77,6 +90,10 @@ datasetSelection.element.onchange = async () => {
 
     // 5. update world map
     worldMap.updateChart();
+
+    // 6. update ranking
+    let limit = Number(rankingThreshold.control.value);
+    ranking.update(converter.toChartDataset(dataset, dataset.years[0], limit));
 };
 
 datasetYearSelection.element.onchange = () => {
@@ -84,8 +101,13 @@ datasetYearSelection.element.onchange = () => {
     const selectedOption = datasetYearSelection.element.value;
 
     // 2. update world map
-    worldMap.updateData(dataset.byYear(selectedOption)!);
+    worldMap.updateData(dataset.byYear(Number(selectedOption))!);
     worldMap.updateChart();
+
+    // 3. update ranking
+    let limit = Number(rankingThreshold.control.value);
+    ranking.update(converter.toChartDataset(dataset, Number(selectedOption), limit));
+
 }
 
 // ====================================================================================================
@@ -101,8 +123,6 @@ const threshold = new Threshold("threshold-selection",
     ColourSchemes.threshold.reverse().map((v, i) => [ColourSchemes.threshold.length - i, v]));
 
 threshold.setCallback(() => {
-    console.log(threshold.getThresholds());
-    console.log(threshold.getColours());
     worldMap.scale = d3.scaleThreshold<any, any>()
         .domain(threshold.getThresholds())
         .range(threshold.getColours());
@@ -157,8 +177,11 @@ scaleSelection.element.onchange = () => {
 };
 
 // ====================================================================================================
-worldMap.updateData(dataset.byYear(dataset.years[0].toString())!);
+
+worldMap.updateData(dataset.byYear(dataset.years[0])!);
 worldMap.scale = d3.scaleLinear<any>()
     .domain(worldMap.scaleRange)
     .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
 worldMap.updateChart();
+
+ranking.update(converter.toChartDataset(dataset, dataset.years[0], 10));

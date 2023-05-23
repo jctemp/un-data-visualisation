@@ -77,7 +77,57 @@ class Threshold {
     controls: [HTMLInputElement, HTMLInputElement][] = [];
     element: HTMLElement;
 }
-export { Threshold };
+
+
+class ThresholdNumber {
+    constructor(parentId: string, range: [number, number], prefix: string) {
+        const parent = document.getElementById(parentId);
+        if (parent == null) throw Error("The threshold parent does not exists.");
+        parent.classList.add("threshold-container");
+        this.element = parent;
+
+        const [min, max] = range;
+
+        const tuple = document.createElement("div");
+        tuple.classList.add("threshold-tuple");
+
+        const numberInput = document.createElement("input");
+        numberInput.type = "number";
+        numberInput.value = min.toString();
+        numberInput.min = min.toString();
+        numberInput.max = max.toString();
+        numberInput.classList.add("threshold-number");
+
+        const label = document.createElement("div");
+        label.innerText = prefix;
+        label.classList.add("threshold-label");
+
+        this.control = numberInput;
+
+        tuple.append(label);
+        tuple.append(numberInput);
+        parent.append(tuple);
+
+        this.control.onkeydown = (e) => {
+            if (e.key === "Enter") {
+                this.control.value = Math.min(max, Math.max(min, parseFloat(this.control.value))).toString();
+            }
+        }
+    }
+
+    public setRange(range: [number, number]) {
+        this.control.min = range[0].toString();
+        this.control.max = range[1].toString();
+    }
+
+    public setCallback(callback: () => void) {
+        this.control.onchange = callback;
+    }
+
+    control: HTMLInputElement;
+    element: HTMLElement;
+}
+export { Threshold, ThresholdNumber };
 
 
 
