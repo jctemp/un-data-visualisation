@@ -8,6 +8,8 @@ import { CountryIds, Dataset } from "../utils/dataset";
 import { Selection } from "../components/selection";
 import { Threshold } from "../components/threshold";
 
+import "../components/chart";
+
 // ====================================================================================================
 // Create the world map and load an initial dataset
 

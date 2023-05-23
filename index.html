@@ -28,7 +28,7 @@
     </section>
 
     <!-- WORLD MAP SECTION -->
-    <section class="align odd:bg-zinc-200 relative" aria-label="A colored world map that displays dataset values.">
+    <section class="align odd:bg-zinc-100 relative" aria-label="A colored world map that displays dataset values.">
       <div class="flex gap-2 justify-end flex-wrap" id="map-actions"></div>
       <span id="map-tooltip"></span>
       <svg class="max-w-screen-2xl m-auto" id="map">
@@ -45,12 +45,23 @@
 
     <!-- RANKING SECTION -->
     <section class="align odd:bg-zinc-100" aria-label="A bar charts thats shows a top n ranking of countries.">
-      <canvas class="max-w-screen-2xl m-auto" id="ranking"></canvas>
+      <div class="chart max-w-screen-lg m-auto">
+        <canvas id="ranking"></canvas>
+      </div>
     </section>
 
     <!-- MORE SECTION -->
-    <section class="align odd:bg-zinc-100" aria-label="">
-      <canvas class="max-w-screen-2xl m-auto" id="ranking"></canvas>
+    <section class="align odd:bg-zinc-100 p-8" aria-label="">
+      <div class="chart max-w-screen-lg m-auto">
+        <canvas id="scatter"></canvas>
+      </div>
+    </section>
+
+    <!-- MORE SECTION -->
+    <section class="align odd:bg-zinc-100 p-8" aria-label="">
+      <div class="chart max-w-screen-lg m-auto">
+        <canvas id="radar"></canvas>
+      </div>
     </section>
   </main>
 

@@ -11,6 +11,7 @@ h3 {
     font-family: 'DM Serif Display', serif;
 }
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
