@@ -48,7 +48,19 @@ class Selection {
             throw Error("parent does not exits");
 
         const clonedElement = this.element.cloneNode(true) as HTMLSelectElement;
+        clonedElement.name = this.element.name + "-cloned";
         parent.append(clonedElement);
+
+        // link the cloned element to the same event handlers
+        clonedElement.onchange = this.element.onchange;
+        clonedElement.addEventListener("change", (e) => {
+            this.element.value = clonedElement.value;
+            this.element.onchange?.call(this.element, e);
+        });
+        this.element.addEventListener("change", (e) => {
+            clonedElement.value = this.element.value;
+            clonedElement.onchange?.call(clonedElement, e);
+        });
 
         const cloned = new Selection(clonedElement);
         return cloned;

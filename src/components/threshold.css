@@ -16,6 +16,15 @@
         @apply transition-all duration-200;
     }
 
+    .threshold-container-relative {
+        @apply aria-disabled:-right-40 aria-disabled:hidden;
+
+        @apply flex gap-2 flex-wrap justify-start flex-row-reverse;
+        @apply relative mt-2;
+
+        @apply transition-all duration-200;
+    }
+
     .threshold-label {
         @apply font-semibold
     }

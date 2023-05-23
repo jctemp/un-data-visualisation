@@ -83,7 +83,7 @@ class ThresholdNumber {
     constructor(parentId: string, range: [number, number], prefix: string) {
         const parent = document.getElementById(parentId);
         if (parent == null) throw Error("The threshold parent does not exists.");
-        parent.classList.add("threshold-container");
+        parent.classList.add("threshold-container-relative");
         this.element = parent;
 
         const [min, max] = range;
