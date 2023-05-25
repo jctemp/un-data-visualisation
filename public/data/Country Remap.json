@@ -178,5 +178,9 @@
     {
         "from": "Somaliland",
         "to": "Somalia"
+    },
+    {
+        "from": "W. Sahara",
+        "to": "Western Sahara"
     }
 ]

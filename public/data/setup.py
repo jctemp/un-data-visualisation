@@ -106,12 +106,15 @@ def load_dataframe(url: str) -> pd.DataFrame:
     ds.rename({"Region/Country/Area": "id",
                np.nan: "name"}, axis=1, inplace=True)
 
+    print(ds.to_json("dump.json",orient="records", force_ascii=True))
+
     return pd.merge(countries, ds, "inner", "name").drop(
         "id_y", axis=1).rename({"id_x": "id"}, axis=1)
 
 
 def write_dataframe(url: str) -> None:
     ds_processed = load_dataframe(url)
+    return
 
     for name, data in ds_processed.groupby(["Series"]):
         data = data.pivot(index="id", columns="Year", values="Value")
