@@ -165,22 +165,25 @@ scaleSelection.element.onchange = () => {
 
         const [min, max] = worldMap.scaleRange;
         const scaleType = DatasetOptions.colourMapping.get(datasetA.name)![1];
+        const scaleMode = DatasetOptions.colourMapping.get(datasetA.name)![2];
+        const schema = worldMap.scaleColorScheme === "duo" ? ColourSchemes.threshold_duo : ColourSchemes.threshold_mono;
 
         threshold.setRange([min, max]);
-        const schema = worldMap.scaleColorScheme === "duo" ? ColourSchemes.threshold_duo : ColourSchemes.threshold_mono;
         threshold.setColours(schema.map((v, _) => v));
-
         let values = d3.range(min, max, (max - min) / schema.length);
-        if (scaleType === "Logarithmic") {
+
+        if (scaleType === "Logarithmic" && scaleMode === "auto") {
             let exponents = values.map(v => Math.log(v));
-            let minExp = 0;
+            let minExp = Math.max(0, Math.ceil(Math.min(...exponents)));
             let maxExp = Math.ceil(Math.max(...exponents));
 
             values = d3.range(minExp, maxExp, (maxExp - minExp) / schema.length)
                 .map(v => Math.exp(v));
+        } else if (scaleMode === "custom") {
+            values = DatasetOptions.customThresholds.get(datasetA.name)!;
         }
+
         values = values.map(v => Math.round(v));
-        console.log(values);
 
         threshold.setThresholds(values);
 
@@ -194,8 +197,8 @@ scaleSelection.element.onchange = () => {
                 .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
         } else {
             worldMap.scale = d3.scalePow<any>()
-            .domain(worldMap.scaleRange)
-            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+                .domain(worldMap.scaleRange)
+                .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
         }
 
     } else {
