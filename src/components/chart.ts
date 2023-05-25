@@ -38,9 +38,6 @@ class Converter {
         let data1 = ds1.byYear(ds1.years[year_index]);
         let data2 = ds2.byYear(ds2.years[year_index]);
 
-        console.log(data1, data2);
-        
-
         if (data1 === null || data2 === null) {
             return {
                 name: [ds1.name, ds2.name],

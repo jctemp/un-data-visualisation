@@ -121,8 +121,6 @@ let datasetBSelection = new Selection({
 datasetBSelection.element.value = DatasetOptions.ecology[2];
 
 datasetBSelection.element.addEventListener("change", async () => {
-    console.log("update dataset B");
-
     // 1. get selected options
     const selectedDatasetB = datasetBSelection.element.value;
 
