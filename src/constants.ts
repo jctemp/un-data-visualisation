@@ -50,7 +50,7 @@ export class DatasetOptions {
         ["Grants of patents (number)", ["mono", "Logarithmic"]],
 
         ["Infant mortality for both sexes (per 1,000 live births)", ["duo", "Logarithmic"]],
-        ["Life expectancy at birth for both sexes (years)", ["duo", "Logarithmic"]],
+        ["Life expectancy at birth for both sexes (years)", ["mono", "Logarithmic"]], // fix (80, 75, 70, 65, 60)
         ["Percentage of individuals using the internet", ["mono", "Linear"]],
         ["Population aged 0 to 14 years old (percentage)", ["mono", "Linear"]],
         ["Population aged 60+ years old (percentage)", ["mono", "Linear"]],
@@ -65,8 +65,9 @@ DatasetOptions.economy.forEach(value => DatasetOptions.pathMapping.set(value, 1)
 DatasetOptions.population.forEach(value => DatasetOptions.pathMapping.set(value, 2));
 
 export class ColourSchemes {
-    static readonly mono = ["#FFFFFF", "#FFD780"];
-    static readonly duo = ["#80ACFF", "#FFD780"];
-    static readonly threshold = ["#4686FF", "#80ACFF", "#B4CEFF", "#FFEBC0", "#FFD780", "#FFBF33"];
+    static readonly mono = ["#FFFFFF", "#FF8F02"];
+    static readonly duo = ["#104DFF", "#FF8F02"];
+    static readonly threshold_mono = ["#FFFFFF", "#FFECC2", "#FFD987", "#FFC13B", "#FAAC00", "#FF8F02"];
+    static readonly threshold_duo = ["#104DFF", "#5F96FF", "#C0D6FF", "#FFECC2", "#FFC13B", "#FF8F02"];
 }
 

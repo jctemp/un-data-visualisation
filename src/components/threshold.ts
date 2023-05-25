@@ -58,6 +58,13 @@ class Threshold {
         this.controls.reverse();
     }
 
+    public setColours(colours: string[]) {
+        this.controls.reverse().forEach(([_, colourInput], index) => {
+            colourInput.value = colours[index];
+        });
+        this.controls.reverse();
+    }
+
     public getThresholds(): number[] {
         return this.controls.map(([numberInput, _]) => parseFloat(numberInput.value)).reverse();
     }
