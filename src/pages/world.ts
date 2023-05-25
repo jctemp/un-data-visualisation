@@ -88,6 +88,9 @@ datasetASelection.element.onchange = async () => {
     // 6. update ranking
     let limit = Number(rankingThreshold.control.value);
     ranking.update(converter.toChartDataset(datasetA, datasetA.years[0], limit));
+
+    // 7. update correlations
+    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
 };
 
 datasetYearSelection.element.onchange = () => {
@@ -104,10 +107,10 @@ datasetYearSelection.element.onchange = () => {
 
 }
 
-let datasetASelectionLink = datasetASelection.clone("correlation-actions");
+datasetASelection.clone("correlation-actions");
 let datasetBSelection = new Selection({
     parentId: "correlation-actions",
-    selectName: "Dataset",
+    selectName: "Dataset-B",
     options: [
         ["Ecology", DatasetOptions.ecology],
         ["Economy", DatasetOptions.economy],
@@ -115,13 +118,11 @@ let datasetBSelection = new Selection({
     ],
     useOptionsGroups: true,
 });
-
-datasetASelectionLink.element.addEventListener("change", () => {
-    // 1. Dataset A is updated through original onchange function
-    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
-});
+datasetBSelection.element.value = DatasetOptions.ecology[2];
 
 datasetBSelection.element.addEventListener("change", async () => {
+    console.log("update dataset B");
+
     // 1. get selected options
     const selectedDatasetB = datasetBSelection.element.value;
 
