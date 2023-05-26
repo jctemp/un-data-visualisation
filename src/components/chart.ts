@@ -2,6 +2,7 @@ import "./chart.css";
 
 import { Dataset } from "../utils/dataset";
 import Chart from 'chart.js/auto';
+import { inverseSymmetricLogarithm, symmetricLogarithm } from "../utils/scaling";
 
 class Converter {
     constructor(mapping: Map<string, string>) {
@@ -75,7 +76,7 @@ interface ChartDataset<T, R> {
 }
 
 class BarChart {
-    constructor(elementId: string, showGrid: boolean) {
+    constructor(elementId: string) {
         let html = document.getElementById(elementId) as HTMLCanvasElement | null;
         if (html === null) throw new Error("Could not find ranking canvas");
 
@@ -93,43 +94,79 @@ class BarChart {
                 },
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            display: showGrid
-                        }
-                    },
-                    y: {
-                        grid: {
-                            display: showGrid
-                        }
-                    }
-                }
             }
         });
 
     }
 
-    public update(ds: ChartDataset<number, string>, colour: string[] = ["#00FF00", "#FF0000", "#0000FF"]) {
-        let context = this.chart.getContext().chart.ctx;
-        let gradient = context.createLinearGradient(0, 0, 0, 400);
-        colour.forEach((c, i) => gradient.addColorStop(i / colour.length, c));
-
+    public update(ds: ChartDataset<number, string>, scaleType: string, colour: string[], thresholds: number[]) {
+        this.ds = ds;
         this.chart.data.labels = ds.labels;
+
+        let working = Array.from(ds.data.entries());
+        working = working.filter(a => !isNaN(a[1]));
+        working = working.sort((a, b) => b[1] - a[1]);
+        working = working.slice(0, this.chart.data.labels.length);
+        let min = Math.min(...working.map(a => a[1]));
+
+        if (scaleType === "Logarithmic" || scaleType === "Threshold") {
+            working = working.map(a => {
+                if (min > 0 && a[1] < 10)
+                    return [a[0], a[1] / 10];
+                return [a[0], symmetricLogarithm(a[1])]
+            })
+            thresholds = thresholds.map(a => {
+                return symmetricLogarithm(a);
+            })
+        }
+
+        // for each value, find the threshold it belongs to
+        let colours = working.map(a => {
+            let index = thresholds.findIndex(b => a[1] < b);
+            if (index === -1) index = thresholds.length - 1;
+            return colour[index];
+        });
+
         this.chart.data.datasets = [{
             label: ds.name,
-            data: ds.data,
-            backgroundColor: gradient,
-            borderWidth: 1
+            data: working.map(a => a[1]),
+            backgroundColor: colours,
+            borderWidth: 1,
+            // @ts-ignore
+            tooltip: {
+                callbacks: {
+                    label: (context: { parsed: { y: number; }; label: any; }) => {
+                        let index = this.ds?.labels.findIndex(a => a === context.label);
+                        if (index === undefined || index === -1) return "";
+                        let value = this.ds?.data[index];
+                        return `${context.label}: ${value?.toFixed(1)}`;
+                    }
+                }
+            }
         }];
+        if (scaleType === "Logarithmic" || scaleType === "Threshold") {
+            this.chart.options.scales = {
+                y: {
+                    ticks: {
+                        callback: (value, _index, _values) => {
+                            let num = Number(value);
+                            if (min > 0 && num <= 1)
+                                return (num * 10).toFixed(1);
+                            return inverseSymmetricLogarithm(num).toFixed(1);
+                        }
+                    }
+                }
+            }
+        }
         this.chart.update();
     }
 
+    ds: ChartDataset<number, string> | null = null;
     chart: Chart<"bar", number[], string>;
 }
 
 class ScatterChart {
-    constructor(elementId: string, showGrid: boolean) {
+    constructor(elementId: string) {
         let html = document.getElementById(elementId) as HTMLCanvasElement | null;
         if (html === null) throw new Error("Could not find ranking canvas");
 
@@ -147,18 +184,6 @@ class ScatterChart {
                 },
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            display: showGrid
-                        }
-                    },
-                    y: {
-                        grid: {
-                            display: showGrid
-                        }
-                    }
-                }
             }
         });
 

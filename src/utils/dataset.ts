@@ -1,4 +1,5 @@
 import { json } from "d3";
+import { symmetricLogarithm } from "./scaling";
 
 interface DatasetRecord {
     id: string | undefined,
@@ -17,7 +18,7 @@ interface Slice {
 
 interface Scaling {
     type: string,
-    colorScheme: string,
+    colourScheme: string,
     thresholdType: string,
     thresholds: number[];
 }
@@ -150,32 +151,30 @@ class Dataset {
     }
 
     private loadRanges() {
-        // determine standard deviation
-        const values = Array.from(this.data.values())
-            .map(country => Array.from(country.values()))
-            .reduce((array, value) => array.concat(value), [])
-            .filter(value => !isNaN(value));
-        const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
-        const std = Math.sqrt(values.map(value => Math.pow(value - mean, 2))
-            .reduce((sum, value) => sum + value, 0) / values.length);
+        let mins: number[] = [];
+        let maxs: number[] = [];
 
-        // get min and max value
-        const min = values.reduce((min, value) => Math.min(min, value), Number.MAX_VALUE);
-        const max = values.reduce((max, value) => Math.max(max, value), Number.MIN_VALUE);
 
-        // set range
-        const c = mean * .5;
+        for (let year of this.years) {
+            let min = Number.MAX_VALUE;
+            let max = Number.MIN_VALUE;
 
-        let clampedMin = Math.max(min, mean - c * std);
-        let clampedMax = Math.min(max, mean + c * std);
+            for (let country of this.data.values()) {
+                let value = country.get(year);
+                if (value === undefined) continue;
 
-        if (clampedMin > clampedMax) {
-            let tmp = clampedMin;
-            clampedMin = clampedMax;
-            clampedMax = tmp;
+                if (value < min) min = value;
+                if (value > max) max = value;
+            }
+
+            mins.push(min);
+            maxs.push(max);
         }
 
-        this.range = [clampedMin, clampedMax];
+        let avgMin = mins.reduce((a, b) => a + b, 0) / mins.length;
+        let avgMax = maxs.reduce((a, b) => a + b, 0) / maxs.length;
+
+        this.range = [avgMin, avgMax];
     }
 
     private constructor(data: Map<string, Map<number, number>>, years: number[], name: string) {
@@ -185,11 +184,12 @@ class Dataset {
 
         // for every year in the dataset get the min and max value
         this.range = [0, 0];
-        this.loadRanges();
         this.yearCurrent = this.years[0];
 
         this.scaling = COLOUR_MAPPING.get(name)!;
         this.scalingTypeCurrent = this.scaling.type;
+
+        this.loadRanges();
     }
 
     public name: string;
@@ -204,26 +204,26 @@ class Dataset {
 }
 
 const COLOUR_MAPPING = new Map<string, Scaling>([
-    ["Arable land (percent of total land area)", { type: "Linear", colorScheme: "Mono", thresholdType: "", thresholds: [] }],
-    ["Emissions per capita (metric tons of carbon dioxide)", { type: "Logarithmic", colorScheme: "Mono", thresholdType: "", thresholds: [] }],
-    ["Forest cover (percent of total land area)", { type: "Threshold", colorScheme: "Mono", thresholdType: "", thresholds: [] }],
-    ["Important sites for terrestrial biodiversity protected (percent of total sites protected)", { type: "Linear", colorScheme: "Mono", thresholdType: "", thresholds: [] }],
-    ["Permanent crops (percent of total land area)", { type: "Logarithmic", colorScheme: "Mono", thresholdType: "", thresholds: [] }],
+    ["Arable land (percent of total land area)", { type: "Linear", colourScheme: "Mono", thresholdType: "", thresholds: [] }],
+    ["Emissions per capita (metric tons of carbon dioxide)", { type: "Threshold", colourScheme: "Mono", thresholdType: "", thresholds: [] }],
+    ["Forest cover (percent of total land area)", { type: "Threshold", colourScheme: "Mono", thresholdType: "", thresholds: [] }],
+    ["Important sites for terrestrial biodiversity protected (percent of total sites protected)", { type: "Linear", colourScheme: "Mono", thresholdType: "", thresholds: [] }],
+    ["Permanent crops (percent of total land area)", { type: "Logarithmic", colourScheme: "Mono", thresholdType: "Custom", thresholds: [1, 2, 4, 8, 10, Number.MAX_SAFE_INTEGER] }],
 
-    ["Balance of Payments Current account (millions of US dollars)", { type: "Threshold", colorScheme: "Duo", thresholdType: "Custom", thresholds: [-6000, -3000, 0, 1000, 3000, Number.MAX_SAFE_INTEGER] }],
-    ["Balance of Payments Financial account (millions of US dollars)", { type: "Threshold", colorScheme: "Duo", thresholdType: "Custom", thresholds: [-10000, -5000, 0, 1000, 3000, Number.MAX_SAFE_INTEGER] }],
-    ["GDP per capita (US dollars)", { type: "Threshold", colorScheme: "Mono", thresholdType: "Logarithmic", thresholds: [] }],
-    ["GDP real rates of growth (percent)", { type: "Threshold", colorScheme: "Duo", thresholdType: "Linear", thresholds: [] }],
-    ["Grants of patents (number)", { type: "Logarithmic", colorScheme: "Mono", thresholdType: "Custom", thresholds: [50, 2000, 8000, 25000, 50000, Number.MAX_SAFE_INTEGER] }],
+    ["Balance of Payments Current account (millions of US dollars)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Custom", thresholds: [-3000, -1000, 0, 1000, 3000, Number.MAX_SAFE_INTEGER] }],
+    ["Balance of Payments Financial account (millions of US dollars)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Custom", thresholds: [-100000, -50000, 0, 50000, 100000, Number.MAX_SAFE_INTEGER] }],
+    ["GDP per capita (US dollars)", { type: "Threshold", colourScheme: "Mono", thresholdType: "Logarithmic", thresholds: [] }],
+    ["GDP real rates of growth (percent)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Linear", thresholds: [] }],
+    ["Grants of patents (number)", { type: "Logarithmic", colourScheme: "Mono", thresholdType: "Custom", thresholds: [50, 2000, 8000, 25000, 50000, Number.MAX_SAFE_INTEGER] }],
 
-    ["Infant mortality for both sexes (per 1,000 live births)", { type: "Threshold", colorScheme: "Mono", thresholdType: "Custom", thresholds: [5, 10, 20, 40, 80, Number.MAX_SAFE_INTEGER] }],
-    ["Life expectancy at birth for both sexes (years)", { type: "Threshold", colorScheme: "Mono", thresholdType: "Custom", thresholds: [60, 65, 70, 75, 80, Number.MAX_SAFE_INTEGER] }],
-    ["Percentage of individuals using the internet", { type: "Logarithmic", colorScheme: "Mono", thresholdType: "Custom", thresholds: [] }],
-    ["Population aged 0 to 14 years old (percentage)", { type: "Linear", colorScheme: "Mono", thresholdType: "", thresholds: [] }],
-    ["Population aged 60+ years old (percentage)", { type: "Linear", colorScheme: "Mono", thresholdType: "", thresholds: [] }],
-    ["Population annual rate of increase (percent)", { type: "Threshold", colorScheme: "Duo", thresholdType: "Custom", thresholds: [-2, -1, 0, 2, 4, Number.MAX_SAFE_INTEGER] }],
-    ["Population density", { type: "Logarithmic", colorScheme: "Mono", thresholdType: "", thresholds: [] }],
-    ["Population mid-year estimates (millions)", { type: "Threshold", colorScheme: "Mono", thresholdType: "Logarithmic", thresholds: [] }],
+    ["Infant mortality for both sexes (per 1,000 live births)", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [5, 10, 20, 40, 80, Number.MAX_SAFE_INTEGER] }],
+    ["Life expectancy at birth for both sexes (years)", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [60, 65, 70, 75, 80, Number.MAX_SAFE_INTEGER] }],
+    ["Percentage of individuals using the internet", { type: "Logarithmic", colourScheme: "Mono", thresholdType: "", thresholds: [] }],
+    ["Population aged 0 to 14 years old (percentage)", { type: "Linear", colourScheme: "Mono", thresholdType: "", thresholds: [] }],
+    ["Population aged 60+ years old (percentage)", { type: "Linear", colourScheme: "Mono", thresholdType: "", thresholds: [] }],
+    ["Population annual rate of increase (percent)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Custom", thresholds: [-2, -1, 0, 2, 4, Number.MAX_SAFE_INTEGER] }],
+    ["Population density", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [10, 50, 100, 200, 400, Number.MAX_SAFE_INTEGER] }],
+    ["Population mid-year estimates (millions)", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [1, 10, 100, 200, 500, Number.MAX_SAFE_INTEGER] }],
 ]);
 
 export { Dataset, CountryIds };

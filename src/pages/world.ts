@@ -8,6 +8,7 @@ import { CountryIds, Dataset } from "../utils/dataset";
 
 import { Selection } from "../components/selection";
 import { Threshold, ThresholdNumber } from "../components/threshold";
+import { inverseSymmetricLogarithm, symmetricLogarithm } from "../utils/scaling";
 
 // ====================================================================================================
 // Create the world map and load an initial dataset
@@ -30,8 +31,8 @@ ids.map.forEach((a, b) => countries.set(a, b));
 worldMap.setCountryIds(ids);
 
 let converter = new Converter(countries);
-let ranking = new BarChart("ranking", true);
-let correlations = new ScatterChart("correlation", true);
+let ranking = new BarChart("ranking");
+let correlations = new ScatterChart("correlation");
 
 // ====================================================================================================
 // Colour scaling function
@@ -41,26 +42,10 @@ function updateScale(): void {
     const [min, max] = datasetA.range;
 
     if (datasetA.scalingTypeCurrent === "Threshold") {
-        const schema = datasetA.scaling.colorScheme === "Duo" ? ColourSchemes.thresholdDuo : ColourSchemes.thresholdMono;
-
+        const schema = datasetA.scaling.colourScheme === "Duo" ? ColourSchemes.thresholdDuo : ColourSchemes.thresholdMono;
         threshold.show();
 
-        threshold.setRange([min, max]);
-        threshold.setColours(schema.map((v, _) => v));
-        let values = d3.range(min, max, (max - min) / schema.length);
-
-        if (datasetA.scaling.thresholdType === "Logarithmic") {
-            let exponents = values.map(v => Math.log(v));
-            let minExp = Math.max(0, Math.ceil(Math.min(...exponents)));
-            let maxExp = Math.ceil(Math.max(...exponents));
-
-            values = d3.range(minExp, maxExp, (maxExp - minExp) / schema.length)
-                .map(v => Math.exp(v));
-        } else if (datasetA.scaling.thresholdType === "Custom") {
-            values = datasetA.scaling.thresholds;
-        }
-
-        values = values.map(v => Math.round(v));
+        let values = calculateThresholds(schema, [min, max]);
 
         threshold.setThresholds(values);
 
@@ -68,7 +53,7 @@ function updateScale(): void {
             .domain(threshold.getThresholds())
             .range(threshold.getColours());
     } else {
-        const schema = datasetA.scaling.colorScheme === "Duo" ? ColourSchemes.duo : ColourSchemes.mono;
+        const schema = datasetA.scaling.colourScheme === "Duo" ? ColourSchemes.duo : ColourSchemes.mono;
         threshold.hide();
         if (datasetA.scalingTypeCurrent === "Logarithmic") {
             worldMap.scale = d3.scaleLog<any>()
@@ -80,6 +65,27 @@ function updateScale(): void {
                 .range(schema);
         }
     }
+}
+
+function calculateThresholds(schema: string[], range: [number, number]): number[] {
+    const [min, max] = range;
+
+    threshold.setRange([min, max]);
+    threshold.setColours(schema.map((v, _) => v));
+    let values = d3.range(min, max, (max - min) / schema.length);
+
+    if (datasetA.scaling.thresholdType === "Logarithmic") {
+        let exponents = values.map(v => symmetricLogarithm(v));
+        let minExp = Math.ceil(Math.min(...exponents));
+        let maxExp = Math.ceil(Math.max(...exponents));
+
+        values = d3.range(minExp, maxExp, (maxExp - minExp) / schema.length)
+            .map(v => Math.pow(10, v));
+    } else if (datasetA.scaling.thresholdType === "Custom") {
+        values = datasetA.scaling.thresholds;
+    }
+
+    return values.map(v => Math.round(v));
 }
 
 // ====================================================================================================
@@ -131,8 +137,9 @@ datasetASelection.element.onchange = async () => {
     worldMap.updateChart();
 
     // 6. update ranking
+    let colour = datasetA.scaling.colourScheme === "Mono" ? ColourSchemes.thresholdMono : ColourSchemes.thresholdDuo;
     let limit = Number(rankingThreshold.control.value);
-    ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit));
+    ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, colour, calculateThresholds(colour, datasetA.range));
 
     // 7. update correlations
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
@@ -148,8 +155,9 @@ datasetYearSelection.element.onchange = () => {
     worldMap.updateChart();
 
     // 3. update ranking
+    let colour = datasetA.scaling.colourScheme === "Mono" ? ColourSchemes.thresholdMono : ColourSchemes.thresholdDuo;
     let limit = Number(rankingThreshold.control.value);
-    ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit));
+    ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, colour, calculateThresholds(colour, datasetA.range));
 
 }
 
@@ -206,11 +214,12 @@ scaleSelection.element.onchange = () => {
 
 // ====================================================================================================
 // Ranking threshold
-const rankingThreshold = new ThresholdNumber("ranking-actions", [10, 100], "Top ");
+const rankingThreshold = new ThresholdNumber("ranking-actions", [10, 100], "Highest Top ");
 
 rankingThreshold.setCallback(() => {
+    let colour = datasetA.scaling.colourScheme === "Mono" ? ColourSchemes.thresholdMono : ColourSchemes.thresholdDuo;
     let limit = Number(rankingThreshold.control.value);
-    ranking.update(converter.toChartDataset(datasetA, Number(datasetYearSelection.element.value), limit));
+    ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, colour, calculateThresholds(colour, datasetA.range));
 });
 
 
@@ -220,8 +229,8 @@ worldMap.updateData(datasetA.byYear(datasetA.yearCurrent)!);
 updateScale();
 worldMap.updateChart();
 
-ranking.update(converter.toChartDataset(datasetA, datasetA.years[0], 10));
+let colour = datasetA.scaling.colourScheme === "Mono" ? ColourSchemes.thresholdMono : ColourSchemes.thresholdDuo;
+let limit = Number(rankingThreshold.control.value);
+ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, colour, calculateThresholds(colour, datasetA.range));
 
 correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
-
-// ====================================================================================================
