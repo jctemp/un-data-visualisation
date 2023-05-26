@@ -60,8 +60,8 @@ export class DatasetOptions {
     ]);
 
     static readonly customThresholds = new Map<string, number[]>([
-        ["Balance of Payments Current account (millions of US dollars)", [-6000, -3000, -1000, 0, 3000, Number.MAX_SAFE_INTEGER]],
-        ["Balance of Payments Financial account (millions of US dollars)", [-10000, -5000, -1000, 0, 3000, Number.MAX_SAFE_INTEGER]],
+        ["Balance of Payments Current account (millions of US dollars)", [-6000, -3000, 0, 1000, 3000, Number.MAX_SAFE_INTEGER]],
+        ["Balance of Payments Financial account (millions of US dollars)", [-10000, -5000, 0, 1000, 3000, Number.MAX_SAFE_INTEGER]],
         ["Grants of patents (number)", [50, 2000, 8000, 25000, 50000, Number.MAX_SAFE_INTEGER]],
 
         ["Infant mortality for both sexes (per 1,000 live births)", [5, 10, 20, 40, 80, Number.MAX_SAFE_INTEGER]],
