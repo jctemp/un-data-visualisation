@@ -37,28 +37,27 @@ let correlations = new ScatterChart("correlation", true);
 // Colour scaling function
 
 function updateScale(): void {
-    if (worldMap.scale == null) return;
-    if (worldMap.scaleType === "Threshold") threshold.show();
-    else threshold.hide();
 
-    if (worldMap.scaleType === "Threshold") {
-        const [min, max] = worldMap.scaleRange;
-        const scaleMode = DatasetOptions.colourMapping.get(datasetA.name)![2];
-        const schema = worldMap.scaleColorScheme === "duo" ? ColourSchemes.threshold_duo : ColourSchemes.threshold_mono;
+    const [min, max] = datasetA.range;
+
+    if (datasetA.scalingTypeCurrent === "Threshold") {
+        const schema = datasetA.scaling.colorScheme === "Duo" ? ColourSchemes.thresholdDuo : ColourSchemes.thresholdMono;
+
+        threshold.show();
 
         threshold.setRange([min, max]);
         threshold.setColours(schema.map((v, _) => v));
         let values = d3.range(min, max, (max - min) / schema.length);
 
-        if (scaleMode === "Logarithmic") {
+        if (datasetA.scaling.thresholdType === "Logarithmic") {
             let exponents = values.map(v => Math.log(v));
             let minExp = Math.max(0, Math.ceil(Math.min(...exponents)));
             let maxExp = Math.ceil(Math.max(...exponents));
 
             values = d3.range(minExp, maxExp, (maxExp - minExp) / schema.length)
                 .map(v => Math.exp(v));
-        } else if (scaleMode === "Custom") {
-            values = DatasetOptions.customThresholds.get(datasetA.name)!;
+        } else if (datasetA.scaling.thresholdType === "Custom") {
+            values = datasetA.scaling.thresholds;
         }
 
         values = values.map(v => Math.round(v));
@@ -68,21 +67,18 @@ function updateScale(): void {
         worldMap.scale = d3.scaleThreshold<any, any>()
             .domain(threshold.getThresholds())
             .range(threshold.getColours());
-    } else if (worldMap.scaleType === "Logarithmic") {
-        if (worldMap.scaleRange[0] > 0) {
-            worldMap.scale = d3.scaleLog<any>()
-                .domain(worldMap.scaleRange)
-                .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
-        } else {
-            worldMap.scale = d3.scalePow<any>()
-                .domain(worldMap.scaleRange)
-                .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
-        }
-
     } else {
-        worldMap.scale = d3.scaleLinear<any>()
-            .domain(worldMap.scaleRange)
-            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+        const schema = datasetA.scaling.colorScheme === "Duo" ? ColourSchemes.duo : ColourSchemes.mono;
+        threshold.hide();
+        if (datasetA.scalingTypeCurrent === "Logarithmic") {
+            worldMap.scale = d3.scaleLog<any>()
+                .domain([min, max])
+                .range(schema);
+        } else {
+            worldMap.scale = d3.scaleLinear<any>()
+                .domain([min, max])
+                .range(schema);
+        }
     }
 }
 
@@ -116,18 +112,19 @@ datasetASelection.element.onchange = async () => {
     await datasetA.load(path, selectedOption);
     datasetYearSelection.update(datasetA.years.map(year => year.toString()));
 
-    let [preferredColourScheme, preferredScale, thresholdType] = DatasetOptions.colourMapping.get(selectedOption)!;
-
     // 3. update world map
-    worldMap.updateData(datasetA.byYear(datasetA.years[0])!);
-
-    worldMap.scaleType = preferredScale;
-    worldMap.scaleColorScheme = preferredColourScheme;
-    worldMap.scaleThresholdType = thresholdType;
-    scaleSelection.element.value = preferredScale;
+    worldMap.updateData(datasetA.byYear(datasetA.yearCurrent)!);
 
     // 4. update scale
-    scaleSelection.element.value = worldMap.scaleType
+    scaleSelection.element.value = datasetA.scaling.type;
+
+    // disable "Logarithmic" option if values are negative
+    if (datasetA.range[0] < 0) {
+        scaleSelection.element.options[1].disabled = true;
+    } else {
+        scaleSelection.element.options[1].disabled = false;
+    }
+
     updateScale();
 
     // 5. update world map
@@ -135,7 +132,7 @@ datasetASelection.element.onchange = async () => {
 
     // 6. update ranking
     let limit = Number(rankingThreshold.control.value);
-    ranking.update(converter.toChartDataset(datasetA, datasetA.years[0], limit));
+    ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit));
 
     // 7. update correlations
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
@@ -143,15 +140,16 @@ datasetASelection.element.onchange = async () => {
 
 datasetYearSelection.element.onchange = () => {
     // 1. get selected option
-    const selectedOption = datasetYearSelection.element.value;
+    datasetA.yearCurrent = Number(datasetYearSelection.element.value);
+    updateScale();
 
     // 2. update world map
-    worldMap.updateData(datasetA.byYear(Number(selectedOption))!);
+    worldMap.updateData(datasetA.byYear(datasetA.yearCurrent)!);
     worldMap.updateChart();
 
     // 3. update ranking
     let limit = Number(rankingThreshold.control.value);
-    ranking.update(converter.toChartDataset(datasetA, Number(selectedOption), limit));
+    ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit));
 
 }
 
@@ -191,7 +189,7 @@ let scaleSelection = new Selection({
 });
 
 const threshold = new Threshold("threshold-selection",
-    ColourSchemes.threshold_mono.map((v, i) => [ColourSchemes.threshold_mono.length - i, v]));
+    ColourSchemes.thresholdMono.map((v, i) => [ColourSchemes.thresholdMono.length - i, v]));
 
 threshold.setCallback(() => {
     worldMap.scale = d3.scaleThreshold<any, any>()
@@ -201,7 +199,7 @@ threshold.setCallback(() => {
 });
 
 scaleSelection.element.onchange = () => {
-    worldMap.scaleType = scaleSelection.element.value;
+    datasetA.scalingTypeCurrent = scaleSelection.element.value;
     updateScale();
     worldMap.updateChart();
 };
@@ -218,10 +216,8 @@ rankingThreshold.setCallback(() => {
 
 // ====================================================================================================
 
-worldMap.updateData(datasetA.byYear(datasetA.years[0])!);
-worldMap.scale = d3.scaleLinear<any>()
-    .domain(worldMap.scaleRange)
-    .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+worldMap.updateData(datasetA.byYear(datasetA.yearCurrent)!);
+updateScale();
 worldMap.updateChart();
 
 ranking.update(converter.toChartDataset(datasetA, datasetA.years[0], 10));

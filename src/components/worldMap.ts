@@ -116,13 +116,9 @@ class WorldMap {
      * @param values is a map that maps country ids to values.
      */
     public updateData(values: Map<string, number>) {
-        let min = Number.MAX_VALUE, max = Number.MIN_VALUE;
         this.data.forEach(country => {
             country.properties[TARGET_PROPERTY] = values.get(country.properties.id) || NaN;
-            min = country.properties[TARGET_PROPERTY] < min ? country.properties[TARGET_PROPERTY] : min;
-            max = country.properties[TARGET_PROPERTY] > max ? country.properties[TARGET_PROPERTY] : max;
         });
-        this.scaleRange = [min, max];
     }
 
     /**
@@ -188,10 +184,6 @@ class WorldMap {
     public data: Feature<Geometry, GeoProperties>[];
 
     public scale: Scale | null = null;
-    public scaleType: string = "Linear";
-    public scaleThresholdType: string = "Linear";
-    public scaleColorScheme: string = "mono";
-    public scaleRange: [number, number] = [0, 0];
 }
 
 export { WorldMap };
