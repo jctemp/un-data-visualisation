@@ -157,6 +157,16 @@ class BarChart {
                     }
                 }
             }
+        } else {
+            this.chart.options.scales = {
+                y: {
+                    ticks: {
+                        callback: (value, _index, _values) => {
+                            return Number(value).toFixed(1);
+                        }
+                    }
+                }
+            }
         }
         this.chart.update();
     }
