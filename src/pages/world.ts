@@ -8,7 +8,7 @@ import { CountryIds, Dataset } from "../utils/dataset";
 
 import { Selection } from "../components/selection";
 import { Threshold, ThresholdNumber } from "../components/threshold";
-import { inverseSymmetricLogarithm, symmetricLogarithm } from "../utils/scaling";
+import { symmetricLogarithm } from "../utils/scaling";
 
 // ====================================================================================================
 // Create the world map and load an initial dataset
