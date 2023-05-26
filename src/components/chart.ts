@@ -67,8 +67,6 @@ class Converter {
     mapping: Map<string, string>;
 }
 
-
-
 interface ChartDataset<T, R> {
     name: R,
     labels: string[],
@@ -112,11 +110,16 @@ class BarChart {
 
     }
 
-    public update(ds: ChartDataset<number, string>) {
+    public update(ds: ChartDataset<number, string>, colour: string[] = ["#00FF00", "#FF0000", "#0000FF"]) {
+        let context = this.chart.getContext().chart.ctx;
+        let gradient = context.createLinearGradient(0, 0, 0, 400);
+        colour.forEach((c, i) => gradient.addColorStop(i / colour.length, c));
+
         this.chart.data.labels = ds.labels;
         this.chart.data.datasets = [{
             label: ds.name,
             data: ds.data,
+            backgroundColor: gradient,
             borderWidth: 1
         }];
         this.chart.update();

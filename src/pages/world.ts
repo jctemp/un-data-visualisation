@@ -179,6 +179,7 @@ datasetBSelection.element.addEventListener("change", async () => {
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
 
 });
+
 // ====================================================================================================
 // Scale selection
 
