@@ -189,6 +189,7 @@ class WorldMap {
 
     public scale: Scale | null = null;
     public scaleType: string = "Linear";
+    public scaleThresholdType: string = "Linear";
     public scaleColorScheme: string = "mono";
     public scaleRange: [number, number] = [0, 0];
 }

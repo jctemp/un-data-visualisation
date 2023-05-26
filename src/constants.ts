@@ -37,26 +37,26 @@ export class DatasetOptions {
     static readonly pathMapping = new Map<string, number>()
 
     static readonly colourMapping = new Map<string, [string, string, string]>([
-        ["Arable land (percent of total land area)", ["mono", "Linear", "auto"]], // keep
-        ["Emissions per capita (metric tons of carbon dioxide)", ["mono", "Logarithmic", "auto"]], // keep
-        ["Forest cover (percent of total land area)", ["mono", "Linear", "auto"]], // keep
-        ["Important sites for terrestrial biodiversity protected (percent of total sites protected)", ["mono", "Linear", "auto"]], // keep
-        ["Permanent crops (percent of total land area)", ["mono", "Logarithmic", "auto"]], // keep
- 
-        ["Balance of Payments Current account (millions of US dollars)", ["duo", "Linear", "custom"]], // custon threshold
-        ["Balance of Payments Financial account (millions of US dollars)", ["duo", "Linear", "custom"]], // custon threshold
-        ["GDP per capita (US dollars)", ["mono", "Logarithmic", "auto"]], // threshold default
-        ["GDP real rates of growth (percent)", ["duo", "Linear", "auto"]], // threshold default
-        ["Grants of patents (number)", ["mono", "Logarithmic", "custom"]], // custom threshold
+        ["Arable land (percent of total land area)", ["mono", "Linear", "Linear"]],
+        ["Emissions per capita (metric tons of carbon dioxide)", ["mono", "Logarithmic", "Logarithmic"]],
+        ["Forest cover (percent of total land area)", ["mono", "Linear", "Linear"]],
+        ["Important sites for terrestrial biodiversity protected (percent of total sites protected)", ["mono", "Linear", "Linear"]],
+        ["Permanent crops (percent of total land area)", ["mono", "Logarithmic", "Auto"]],
 
-        ["Infant mortality for both sexes (per 1,000 live births)", ["mono", "Logarithmic", "custom"]], // threshold default
-        ["Life expectancy at birth for both sexes (years)", ["mono", "Logarithmic", "custom"]], // threshold default + custom
-        ["Percentage of individuals using the internet", ["mono", "Logarithmic", "custom"]],  // keep
-        ["Population aged 0 to 14 years old (percentage)", ["mono", "Linear", "auto"]], // keep
-        ["Population aged 60+ years old (percentage)", ["mono", "Linear", "auto"]], // keep
-        ["Population annual rate of increase (percent)", ["duo", "Linear", "custom"]], // threshold default, custom
-        ["Population density", ["mono", "Logarithmic", "auto"]], // keep
-        ["Population mid-year estimates (millions)", ["mono", "Logarithmic", "auto"]], // keep
+        ["Balance of Payments Current account (millions of US dollars)", ["duo", "Threshold", "Custom"]],
+        ["Balance of Payments Financial account (millions of US dollars)", ["duo", "Threshold", "Custom"]],
+        ["GDP per capita (US dollars)", ["mono", "Threshold", "Logarithmic"]],
+        ["GDP real rates of growth (percent)", ["duo", "Threshold", "Linear"]],
+        ["Grants of patents (number)", ["mono", "Logarithmic", "Custom"]],
+
+        ["Infant mortality for both sexes (per 1,000 live births)", ["mono", "Threshold", "Custom"]],
+        ["Life expectancy at birth for both sexes (years)", ["mono", "Threshold", "Custom"]],
+        ["Percentage of individuals using the internet", ["mono", "Logarithmic", "Custom"]],
+        ["Population aged 0 to 14 years old (percentage)", ["mono", "Linear", "Linear"]],
+        ["Population aged 60+ years old (percentage)", ["mono", "Linear", "Linear"]],
+        ["Population annual rate of increase (percent)", ["duo", "Threshold", "Custom"]],
+        ["Population density", ["mono", "Logarithmic", "Logarithmic"]],
+        ["Population mid-year estimates (millions)", ["mono", "Threshold", "Logarithmic"]],
     ]);
 
     static readonly customThresholds = new Map<string, number[]>([

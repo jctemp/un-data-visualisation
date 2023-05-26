@@ -34,6 +34,59 @@ let ranking = new BarChart("ranking", true);
 let correlations = new ScatterChart("correlation", true);
 
 // ====================================================================================================
+// Colour scaling function
+
+function updateScale(): void {
+    if (worldMap.scale == null) return;
+    if (worldMap.scaleType === "Threshold") threshold.show();
+    else threshold.hide();
+
+    if (worldMap.scaleType === "Threshold") {
+        const [min, max] = worldMap.scaleRange;
+        const scaleMode = DatasetOptions.colourMapping.get(datasetA.name)![2];
+        const schema = worldMap.scaleColorScheme === "duo" ? ColourSchemes.threshold_duo : ColourSchemes.threshold_mono;
+
+        threshold.setRange([min, max]);
+        threshold.setColours(schema.map((v, _) => v));
+        let values = d3.range(min, max, (max - min) / schema.length);
+
+        if (scaleMode === "Logarithmic") {
+            let exponents = values.map(v => Math.log(v));
+            let minExp = Math.max(0, Math.ceil(Math.min(...exponents)));
+            let maxExp = Math.ceil(Math.max(...exponents));
+
+            values = d3.range(minExp, maxExp, (maxExp - minExp) / schema.length)
+                .map(v => Math.exp(v));
+        } else if (scaleMode === "Custom") {
+            values = DatasetOptions.customThresholds.get(datasetA.name)!;
+        }
+
+        values = values.map(v => Math.round(v));
+
+        threshold.setThresholds(values);
+
+        worldMap.scale = d3.scaleThreshold<any, any>()
+            .domain(threshold.getThresholds())
+            .range(threshold.getColours());
+    } else if (worldMap.scaleType === "Logarithmic") {
+        if (worldMap.scaleRange[0] > 0) {
+            worldMap.scale = d3.scaleLog<any>()
+                .domain(worldMap.scaleRange)
+                .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+        } else {
+            worldMap.scale = d3.scalePow<any>()
+                .domain(worldMap.scaleRange)
+                .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+        }
+
+    } else {
+        worldMap.scale = d3.scaleLinear<any>()
+            .domain(worldMap.scaleRange)
+            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+    }
+}
+
+// ====================================================================================================
 // Create the dataset selection
 
 let datasetASelection = new Selection({
@@ -63,24 +116,19 @@ datasetASelection.element.onchange = async () => {
     await datasetA.load(path, selectedOption);
     datasetYearSelection.update(datasetA.years.map(year => year.toString()));
 
-    const [preferredColourScheme, preferredScale] = DatasetOptions.colourMapping.get(selectedOption)!;
+    let [preferredColourScheme, preferredScale, thresholdType] = DatasetOptions.colourMapping.get(selectedOption)!;
 
     // 3. update world map
     worldMap.updateData(datasetA.byYear(datasetA.years[0])!);
-    worldMap.scaleColorScheme = preferredColourScheme;
-    scaleSelection.element.value = preferredScale;
-    worldMap.scaleType = preferredScale;
-    threshold.hide();
 
-    // 4. create a linear scale if the values are negative otherwise a log scale
-    if (preferredScale === "Logarithmic")
-        worldMap.scale = d3.scaleLog<any>()
-            .domain(worldMap.scaleRange)
-            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
-    else
-        worldMap.scale = d3.scaleLinear<any>()
-            .domain(worldMap.scaleRange)
-            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
+    worldMap.scaleType = preferredScale;
+    worldMap.scaleColorScheme = preferredColourScheme;
+    worldMap.scaleThresholdType = thresholdType;
+    scaleSelection.element.value = preferredScale;
+
+    // 4. update scale
+    scaleSelection.element.value = worldMap.scaleType
+    updateScale();
 
     // 5. update world map
     worldMap.updateChart();
@@ -153,57 +201,7 @@ threshold.setCallback(() => {
 
 scaleSelection.element.onchange = () => {
     worldMap.scaleType = scaleSelection.element.value;
-
-    if (worldMap.scaleType === "Threshold") threshold.show();
-    else threshold.hide();
-
-    // TODO: Balance of Payments power scale or something like this
-    // TODO: Mutliple datasets have weird values -> manual fix them (most are economy, some in population)
-    if (worldMap.scaleType === "Threshold") {
-
-        const [min, max] = worldMap.scaleRange;
-        const scaleType = DatasetOptions.colourMapping.get(datasetA.name)![1];
-        const scaleMode = DatasetOptions.colourMapping.get(datasetA.name)![2];
-        const schema = worldMap.scaleColorScheme === "duo" ? ColourSchemes.threshold_duo : ColourSchemes.threshold_mono;
-
-        threshold.setRange([min, max]);
-        threshold.setColours(schema.map((v, _) => v));
-        let values = d3.range(min, max, (max - min) / schema.length);
-
-        if (scaleType === "Logarithmic" && scaleMode === "auto") {
-            let exponents = values.map(v => Math.log(v));
-            let minExp = Math.max(0, Math.ceil(Math.min(...exponents)));
-            let maxExp = Math.ceil(Math.max(...exponents));
-
-            values = d3.range(minExp, maxExp, (maxExp - minExp) / schema.length)
-                .map(v => Math.exp(v));
-        } else if (scaleMode === "custom") {
-            values = DatasetOptions.customThresholds.get(datasetA.name)!;
-        }
-
-        values = values.map(v => Math.round(v));
-
-        threshold.setThresholds(values);
-
-        worldMap.scale = d3.scaleThreshold<any, any>()
-            .domain(threshold.getThresholds())
-            .range(threshold.getColours());
-    } else if (worldMap.scaleType === "Logarithmic") {
-        if (worldMap.scaleRange[0] > 0) {
-            worldMap.scale = d3.scaleLog<any>()
-                .domain(worldMap.scaleRange)
-                .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
-        } else {
-            worldMap.scale = d3.scalePow<any>()
-                .domain(worldMap.scaleRange)
-                .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
-        }
-
-    } else {
-        worldMap.scale = d3.scaleLinear<any>()
-            .domain(worldMap.scaleRange)
-            .range(worldMap.scaleColorScheme === "duo" ? ColourSchemes.duo : ColourSchemes.mono);
-    }
+    updateScale();
     worldMap.updateChart();
 };
 
