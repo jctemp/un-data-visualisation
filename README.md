@@ -2,7 +2,6 @@
 
 ## Todos
 
-- Match map and ranking colours (should update if threshold changes)
 - Make axes scaling on scatter plot dependent on dataset (linear, log, etc.)
 - Scatter plot region toggling?
 
