@@ -111,7 +111,7 @@ class BarChart {
 
         if (scaleType === "Logarithmic" || scaleType === "Threshold") {
             working = working.map(a => {
-                if (min > 0 && a[1] < 10)
+                if (min > 0 && a[1] <= 10)
                     return [a[0], a[1] / 10];
                 return [a[0], symmetricLogarithm(a[1])]
             })
@@ -139,11 +139,12 @@ class BarChart {
                         let index = this.ds?.labels.findIndex(a => a === context.label);
                         if (index === undefined || index === -1) return "";
                         let value = this.ds?.data[index];
-                        return `${context.label}: ${value?.toFixed(1)}`;
+                        return `${value?.toFixed(1)}`;
                     }
                 }
             }
         }];
+
         if (scaleType === "Logarithmic" || scaleType === "Threshold") {
             this.chart.options.scales = {
                 y: {
@@ -168,6 +169,7 @@ class BarChart {
                 }
             }
         }
+
         this.chart.update();
     }
 
@@ -199,52 +201,120 @@ class ScatterChart {
 
     }
 
-    public update(ds: ChartDataset<[number, number], [string, string]>) {
+    public update(ds: ChartDataset<[number, number], [string, string]>, scaleType: [string, string]) {
+        const [scaleTypeDsX, scaleTypeDsY] = scaleType;
+        this.ds = ds;
+
+        let working = Array.from(ds.data.entries());
+        working = working.filter(a => !isNaN(a[1][0]) && !isNaN(a[1][1]));
+        let minX = Math.min(...working.map(a => a[1][0]));
+        let minY = Math.min(...working.map(a => a[1][1]));
+
+        if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
+            working = working.map(a => {
+                if (minX > 0 && a[1][0] <= 10)
+                    return [a[0], [a[1][0] / 10, a[1][1]]];
+                return [a[0], [symmetricLogarithm(a[1][0]), a[1][1]]]
+            });
+        }
+
+        if (scaleTypeDsY === "Logarithmic" || scaleTypeDsY === "Threshold") {
+            working = working.map(a => {
+                if (minY > 0 && a[1][1] <= 10)
+                    return [a[0], [a[1][0], a[1][1] / 10]];
+                return [a[0], [a[1][0], symmetricLogarithm(a[1][1])]]
+            });
+        }
+
         this.chart.data.labels = ds.labels;
+
         this.chart.data.datasets = [{
-            data: ds.data,
-            borderWidth: 1
+            data: working.map(a => a[1]),
+            borderWidth: 1,
+            // @ts-ignore
+            tooltip: {
+                callbacks: {
+                    label: (context: {
+                        parsed: { x: number, y: number }; label: any;
+                    }) => {
+                        const label = context.label;
+
+                        let x = context.parsed.x;
+                        if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
+                            if (minX > 0 && x <= 1)
+                                x = (x * 10);
+                            else
+                                x = inverseSymmetricLogarithm(x);
+                        }
+
+                        let y = context.parsed.y;
+                        if (scaleTypeDsY === "Logarithmic" || scaleTypeDsY === "Threshold") {
+                            if (minY > 0 && y <= 1)
+                                y = (y * 10);
+                            else
+                                y = inverseSymmetricLogarithm(y);
+                        }
+
+                        const values = `(${x.toFixed(1)}, ${y.toFixed(1)})`;
+                        return `${label}: ${values}`;
+                    }
+                }
+            }
         }];
 
-        const x_min = Math.min(...ds.data.map(a => a[0]));
-        const x_max = Math.max(...ds.data.map(a => a[0]));
-
-        const y_min = Math.min(...ds.data.map(a => a[1]));
-        const y_max = Math.max(...ds.data.map(a => a[1]));
-
-        const options = {
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: ds.name[0]
-                    },
-                    suggestedMin: x_min,
-                    suggestedMax: x_max
+        let scales = {
+            x: {
+                title: {
+                    display: true,
+                    text: ds.name[0]
                 },
-                y: {
-                    title: {
-                        display: true,
-                        text: ds.name[1]
-                    },
-                    suggestedMin: y_min,
-                    suggestedMax: y_max
+                ticks: {
+                    // @ts-ignore
+                    callback: (value, _index, _values) => {
+                        return Number(value).toFixed(1);
+                    }
+                }
+            }, y: {
+                title: {
+                    display: true,
+                    text: ds.name[1]
+                },
+                ticks: {
+                    // @ts-ignore
+                    callback: (value, _index, _values) => {
+                        return Number(value).toFixed(1);
+                    }
+                }
+            }
+        };
+
+        if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
+            scales.x.ticks = {
+                callback: (value, _index, _values) => {
+                    let num = Number(value);
+                    if (minX > 0 && num <= 1)
+                        return (num * 10).toFixed(1);
+                    return inverseSymmetricLogarithm(num).toFixed(1);
                 }
             }
         }
 
-        // @ts-ignore
-        this.chart.options = options;
+        if (scaleTypeDsY === "Logarithmic" || scaleTypeDsY === "Threshold") {
+            scales.y.ticks = {
+                callback: (value, _index, _values) => {
+                    let num = Number(value);
+                    if (minX > 0 && num <= 1)
+                        return (num * 10).toFixed(1);
+                    return inverseSymmetricLogarithm(num).toFixed(1);
+                }
+            }
+        }
 
+        this.chart.options.scales = scales;
         this.chart.update();
     }
+
+    ds: ChartDataset<[number, number], [string, string]> | null = null;
 
     chart: Chart<"scatter", [number, number][], string>;
 }

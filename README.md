@@ -2,7 +2,6 @@
 
 ## Todos
 
-- Make axes scaling on scatter plot dependent on dataset (linear, log, etc.)
 - Scatter plot region toggling?
 
 ## Our colour schemes

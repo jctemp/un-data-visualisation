@@ -141,7 +141,7 @@ datasetASelection.element.onchange = async () => {
     ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
 
     // 7. update correlations
-    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
+    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0), [datasetA.scaling.type, datasetB.scaling.type]);
 };
 
 datasetYearSelection.element.onchange = () => {
@@ -180,7 +180,7 @@ datasetBSelection.element.addEventListener("change", async () => {
     await datasetB.load(DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedDatasetB)!], selectedDatasetB);
 
     // 3. update correlations
-    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
+    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0), [datasetA.scaling.type, datasetB.scaling.type]);
 
 });
 
@@ -211,7 +211,7 @@ scaleSelection.element.onchange = () => {
     datasetA.scalingTypeCurrent = scaleSelection.element.value;
     updateScale();
     worldMap.updateChart();
-    
+
     let limit = Number(rankingThreshold.control.value);
     ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
 };
@@ -241,4 +241,4 @@ threshold.setThresholds(values);
 let limit = Number(rankingThreshold.control.value);
 ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
 
-correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0));
+correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0), [datasetA.scaling.type, datasetB.scaling.type]);
