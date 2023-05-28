@@ -10,9 +10,10 @@ import numpy as np
 with open("./world.geo.json", "r", encoding="utf8") as file:
     data = json.load(file)
     names = [c["properties"]["name"] for c in data["features"]]
+    continents = [c["properties"]["continent"] for c in data["features"]]
     ids = list(range(len(names)))
     ids = [str(e) for e in ids]
-    df = pd.DataFrame({"id": ids, "name": names})
+    df = pd.DataFrame({"id": ids, "name": names, "continent": continents})
     df.to_json("./datasets/Country Ids.json", orient="records", force_ascii=True)
 
 # ===========================================================================================================
@@ -106,15 +107,12 @@ def load_dataframe(url: str) -> pd.DataFrame:
     ds.rename({"Region/Country/Area": "id",
                np.nan: "name"}, axis=1, inplace=True)
 
-    print(ds.to_json("dump.json",orient="records", force_ascii=True))
-
     return pd.merge(countries, ds, "inner", "name").drop(
         "id_y", axis=1).rename({"id_x": "id"}, axis=1)
 
 
 def write_dataframe(url: str) -> None:
     ds_processed = load_dataframe(url)
-    return
 
     for name, data in ds_processed.groupby(["Series"]):
         data = data.pivot(index="id", columns="Year", values="Value")

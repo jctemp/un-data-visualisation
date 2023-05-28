@@ -1,5 +1,4 @@
 import { json } from "d3";
-import { symmetricLogarithm } from "./scaling";
 
 interface DatasetRecord {
     id: string | undefined,
@@ -8,7 +7,8 @@ interface DatasetRecord {
 
 interface CountryIdRecord {
     id: string,
-    name: string
+    name: string,
+    continent: string,
 };
 
 interface Slice {
@@ -39,7 +39,7 @@ class CountryIds {
         let data = await json<CountryIdRecord[]>(`${resourcePath}/${resource}.json`)
             .then(data => {
                 if (data === undefined) return null;
-                return data.reduce((map, pair) => map.set(pair.name, pair.id), new Map<string, string>());
+                return data.reduce((map, pair) => map.set(pair.name, [pair.id, pair.continent]), new Map<string, [string, string]>());
             })
             .catch(_ => null);
 
@@ -47,11 +47,11 @@ class CountryIds {
         return new CountryIds(data);
     }
 
-    private constructor(map: Map<string, string>) {
+    private constructor(map: Map<string, [string, string]>) {
         this.map = map;
     }
 
-    map: Map<string, string>;
+    map: Map<string, [string, string]>;
 }
 
 /**

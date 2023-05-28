@@ -126,7 +126,7 @@ class WorldMap {
      * @param ids is a map that maps country names to ids.
      */
     public setCountryIds(ids: CountryIds) {
-        this.data.forEach(feature => feature.properties.id = ids.map.get(feature.properties.name) || "-1");
+        this.data.forEach(feature => feature.properties.id = ids.map.get(feature.properties.name)?.[0] || "-1");
     }
 
     private constructor(id: string, tooltipId: string, data: Feature<Geometry, GeoProperties>[]) {

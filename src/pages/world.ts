@@ -26,11 +26,14 @@ let [worldMap, datasetA, datasetB, ids] = await Promise.all([
 ]);
 
 let countries = new Map<string, string>();
-ids.map.forEach((a, b) => countries.set(a, b));
+ids.map.forEach((a, b) => countries.set(a[0], b));
+
+let continents = new Map<string, string>();
+ids.map.forEach((a, _) => continents.set(a[0], a[1]));
 
 worldMap.setCountryIds(ids);
 
-let converter = new Converter(countries);
+let converter = new Converter(countries, continents);
 let ranking = new BarChart("ranking");
 let correlations = new ScatterChart("correlation");
 

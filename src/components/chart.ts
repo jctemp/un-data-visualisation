@@ -5,8 +5,9 @@ import Chart from 'chart.js/auto';
 import { inverseSymmetricLogarithm, symmetricLogarithm } from "../utils/scaling";
 
 class Converter {
-    constructor(mapping: Map<string, string>) {
-        this.mapping = mapping;
+    constructor(countryMapping: Map<string, string>, continentMapping: Map<string, string>) {
+        this.countryMapping = countryMapping;
+        this.continentMapping = continentMapping;
     }
 
     toChartDataset(ds: Dataset, year: number, limit: number = -1): ChartDataset<number, string> {
@@ -17,7 +18,6 @@ class Converter {
                 name: ds.name,
                 labels: [],
                 data: [],
-                borderWidth: 1,
             };
         }
 
@@ -29,9 +29,8 @@ class Converter {
 
         return {
             name: ds.name,
-            labels: Array.from(data.keys()).map(id => this.mapping.get(id)!),
+            labels: Array.from(data.keys()).map(id => this.countryMapping.get(id)!),
             data: Array.from(data.values()),
-            borderWidth: 1,
         };
     }
 
@@ -44,7 +43,6 @@ class Converter {
                 name: [ds1.name, ds2.name],
                 labels: [],
                 data: [],
-                borderWidth: 1,
             };
         }
 
@@ -58,21 +56,22 @@ class Converter {
 
         return {
             name: [ds1.name, ds2.name],
-            labels: Array.from(data.keys()).map(id => this.mapping.get(id)!),
+            labels: Array.from(data.keys()).map(id => this.countryMapping.get(id)!),
             data: Array.from(data.values()),
-            borderWidth: 1,
+            region: Array.from(data.keys()).map(id => this.continentMapping.get(id)!),
         };
     }
 
 
-    mapping: Map<string, string>;
+    countryMapping: Map<string, string>;
+    continentMapping: Map<string, string>;
 }
 
 interface ChartDataset<T, R> {
     name: R,
     labels: string[],
     data: T[],
-    borderWidth: number,
+    region?: string[],
 }
 
 class BarChart {
@@ -191,7 +190,7 @@ class ScatterChart {
             options: {
                 plugins: {
                     legend: {
-                        display: false
+                        display: false,
                     }
                 },
                 responsive: true,
@@ -231,6 +230,8 @@ class ScatterChart {
         this.chart.data.datasets = [{
             data: working.map(a => a[1]),
             borderWidth: 1,
+            backgroundColor: ds.region?.map(a => this.REGIONS[a] ?? "#000000") ?? "#000000",
+            borderColor: "#000000",
             // @ts-ignore
             tooltip: {
                 callbacks: {
@@ -315,8 +316,16 @@ class ScatterChart {
     }
 
     ds: ChartDataset<[number, number], [string, string]> | null = null;
-
     chart: Chart<"scatter", [number, number][], string>;
+
+    REGIONS: { [key: string]: string } = {
+        'Africa': "#FF3900",        // red
+        'Asia': "#1BDE7E",          // green
+        'Europe': "#367DFF",        // blue
+        'North America': "#FBF52A", // yellow
+        'South America': "#DE951B", // orange
+        'Oceania': "#D701FF"        // purple
+    }
 }
 
 export { BarChart, ScatterChart, Converter };
