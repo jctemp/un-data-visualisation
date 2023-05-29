@@ -1,6 +1,6 @@
-import "./threshold.css"
+import "./options.css"
 
-class Threshold {
+class ThresholdOptions {
     constructor(parentId: string, inputs: [number, string][]) {
         const parent = document.getElementById(parentId);
         if (parent == null) throw Error("The threshold parent does not exists.");
@@ -86,7 +86,7 @@ class Threshold {
 }
 
 
-class ThresholdNumber {
+class ThresholdNumberOptions {
     constructor(parentId: string, range: [number, number], prefix: string) {
         const parent = document.getElementById(parentId);
         if (parent == null) throw Error("The threshold parent does not exists.");
@@ -134,7 +134,7 @@ class ThresholdNumber {
     control: HTMLInputElement;
     element: HTMLElement;
 }
-export { Threshold, ThresholdNumber };
+export { ThresholdOptions as Threshold, ThresholdNumberOptions as ThresholdNumber };
 
 
 

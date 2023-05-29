@@ -7,7 +7,7 @@ import { BarChart, Converter, ScatterChart } from "../components/chart";
 import { CountryIds, Dataset } from "../utils/dataset";
 
 import { Selection } from "../components/selection";
-import { Threshold, ThresholdNumber } from "../components/threshold";
+import { Threshold, ThresholdNumber } from "../components/options";
 import { symmetricLogarithm } from "../utils/scaling";
 
 // ====================================================================================================
