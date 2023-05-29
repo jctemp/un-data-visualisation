@@ -43,14 +43,11 @@ let correlations = new ScatterChart("correlation", ColourSchemes.regions);
 function updateScale(): void {
 
     const [min, max] = datasetA.range;
+    let values = calculateThresholds(datasetA.scaling.colourScheme === "Duo" ? ColourSchemes.thresholdDuo : ColourSchemes.thresholdMono, [min, max]);
+    threshold.setThresholds(values);
 
     if (datasetA.scalingTypeCurrent === "Threshold") {
-        const schema = datasetA.scaling.colourScheme === "Duo" ? ColourSchemes.thresholdDuo : ColourSchemes.thresholdMono;
         threshold.show();
-
-        let values = calculateThresholds(schema, [min, max]);
-
-        threshold.setThresholds(values);
 
         worldMap.scale = d3.scaleThreshold<any, any>()
             .domain(threshold.getThresholds())
