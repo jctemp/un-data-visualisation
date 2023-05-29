@@ -151,7 +151,7 @@ class ThresholdNumberOptions {
 
         const numberInput = document.createElement("input");
         numberInput.type = "number";
-        numberInput.value = min.toString();
+        numberInput.value = max.toString();
         numberInput.min = min.toString();
         numberInput.max = max.toString();
         numberInput.classList.add("threshold-number");
@@ -168,6 +168,7 @@ class ThresholdNumberOptions {
 
         this.control.onkeydown = (e) => {
             if (e.key === "Enter") {
+                // cursed
                 this.control.value = Math.min(max, Math.max(min, parseFloat(this.control.value))).toString();
             }
         }

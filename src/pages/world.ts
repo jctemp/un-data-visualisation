@@ -137,6 +137,8 @@ datasetASelection.element.onchange = async () => {
     worldMap.updateChart();
 
     // 6. update ranking
+    rankingThreshold.setRange([1, datasetA.data.size]);
+
     let limit = Number(rankingThreshold.control.value);
     ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
 
@@ -147,7 +149,6 @@ datasetASelection.element.onchange = async () => {
 datasetYearSelection.element.onchange = () => {
     // 1. get selected option
     datasetA.yearCurrent = Number(datasetYearSelection.element.value);
-    updateScale();
 
     // 2. update world map
     worldMap.updateData(datasetA.byYear(datasetA.yearCurrent)!);
@@ -219,7 +220,7 @@ scaleSelection.element.onchange = () => {
 // ====================================================================================================
 // Ranking threshold
 
-const rankingThreshold = new ThresholdNumberOptions("ranking-actions", [10, 100], "Highest Top ");
+const rankingThreshold = new ThresholdNumberOptions("ranking-actions", [1, datasetA.data.size], "Highest Top ");
 
 rankingThreshold.setCallback(() => {
     let limit = Number(rankingThreshold.control.value);

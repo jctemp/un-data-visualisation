@@ -107,12 +107,9 @@ class BarChart {
         working = working.filter(a => !isNaN(a[1]));
         working = working.sort((a, b) => b[1] - a[1]);
         working = working.slice(0, this.chart.data.labels.length);
-        let min = Math.min(...working.map(a => a[1]));
 
         if (scaleType === "Logarithmic" || scaleType === "Threshold") {
             working = working.map(a => {
-                if (min > 0 && a[1] <= 10)
-                    return [a[0], a[1] / 10];
                 return [a[0], symmetricLogarithm(a[1])]
             })
             thresholds = thresholds.map(a => {
@@ -150,10 +147,7 @@ class BarChart {
                 y: {
                     ticks: {
                         callback: (value, _index, _values) => {
-                            let num = Number(value);
-                            if (min > 0 && num <= 1)
-                                return (num * 10).toFixed(1);
-                            return inverseSymmetricLogarithm(num).toFixed(1);
+                            return inverseSymmetricLogarithm(Number(value)).toFixed(1);
                         }
                     }
                 }
@@ -214,16 +208,12 @@ class ScatterChart {
 
         if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
             working = working.map(a => {
-                if (minX > 0 && a[1][0] <= 10)
-                    return [a[0], [a[1][0] / 10, a[1][1]]];
                 return [a[0], [symmetricLogarithm(a[1][0]), a[1][1]]]
             });
         }
 
         if (scaleTypeDsY === "Logarithmic" || scaleTypeDsY === "Threshold") {
             working = working.map(a => {
-                if (minY > 0 && a[1][1] <= 10)
-                    return [a[0], [a[1][0], a[1][1] / 10]];
                 return [a[0], [a[1][0], symmetricLogarithm(a[1][1])]]
             });
         }
@@ -245,18 +235,12 @@ class ScatterChart {
 
                         let x = context.parsed.x;
                         if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
-                            if (minX > 0 && x <= 1)
-                                x = (x * 10);
-                            else
-                                x = inverseSymmetricLogarithm(x);
+                            x = inverseSymmetricLogarithm(x);
                         }
 
                         let y = context.parsed.y;
                         if (scaleTypeDsY === "Logarithmic" || scaleTypeDsY === "Threshold") {
-                            if (minY > 0 && y <= 1)
-                                y = (y * 10);
-                            else
-                                y = inverseSymmetricLogarithm(y);
+                            y = inverseSymmetricLogarithm(y);
                         }
 
                         const values = `(${x.toFixed(1)}, ${y.toFixed(1)})`;
@@ -295,10 +279,7 @@ class ScatterChart {
         if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
             scales.x.ticks = {
                 callback: (value, _index, _values) => {
-                    let num = Number(value);
-                    if (minX > 0 && num <= 1)
-                        return (num * 10).toFixed(1);
-                    return inverseSymmetricLogarithm(num).toFixed(1);
+                    return inverseSymmetricLogarithm(Number(value)).toFixed(1);
                 }
             }
         }
@@ -306,10 +287,7 @@ class ScatterChart {
         if (scaleTypeDsY === "Logarithmic" || scaleTypeDsY === "Threshold") {
             scales.y.ticks = {
                 callback: (value, _index, _values) => {
-                    let num = Number(value);
-                    if (minX > 0 && num <= 1)
-                        return (num * 10).toFixed(1);
-                    return inverseSymmetricLogarithm(num).toFixed(1);
+                    return inverseSymmetricLogarithm(Number(value)).toFixed(1);
                 }
             }
         }

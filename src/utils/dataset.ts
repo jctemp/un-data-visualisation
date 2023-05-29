@@ -211,7 +211,7 @@ const COLOUR_MAPPING = new Map<string, Scaling>([
     ["Permanent crops (percent of total land area)", { type: "Logarithmic", colourScheme: "Mono", thresholdType: "Custom", thresholds: [1, 2, 4, 8, 10, Number.MAX_SAFE_INTEGER] }],
 
     ["Balance of Payments Current account (millions of US dollars)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Custom", thresholds: [-3000, -1000, 0, 1000, 3000, Number.MAX_SAFE_INTEGER] }],
-    ["Balance of Payments Financial account (millions of US dollars)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Custom", thresholds: [-100000, -50000, 0, 50000, 100000, Number.MAX_SAFE_INTEGER] }],
+    ["Balance of Payments Financial account (millions of US dollars)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Custom", thresholds: [-10000, -500, 0, 500, 10000, Number.MAX_SAFE_INTEGER] }],
     ["GDP per capita (US dollars)", { type: "Threshold", colourScheme: "Mono", thresholdType: "Logarithmic", thresholds: [] }],
     ["GDP real rates of growth (percent)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Linear", thresholds: [] }],
     ["Grants of patents (number)", { type: "Logarithmic", colourScheme: "Mono", thresholdType: "Custom", thresholds: [50, 2000, 8000, 25000, 50000, Number.MAX_SAFE_INTEGER] }],
