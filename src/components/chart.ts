@@ -3,6 +3,7 @@ import "./chart.css";
 import { Dataset } from "../utils/dataset";
 import Chart from 'chart.js/auto';
 import { inverseSymmetricLogarithm, symmetricLogarithm } from "../utils/scaling";
+import { ColourSchemes } from "../constants";
 
 class Converter {
     constructor(countryMapping: Map<string, string>, continentMapping: Map<string, string>) {
@@ -177,9 +178,11 @@ class BarChart {
 }
 
 class ScatterChart {
-    constructor(elementId: string) {
+    constructor(elementId: string, colourScheme: { [key: string]: string; }) {
         let html = document.getElementById(elementId) as HTMLCanvasElement | null;
         if (html === null) throw new Error("Could not find ranking canvas");
+
+        this.colourScheme = colourScheme;
 
         this.chart = new Chart(html, {
             type: "scatter",
@@ -230,7 +233,7 @@ class ScatterChart {
         this.chart.data.datasets = [{
             data: working.map(a => a[1]),
             borderWidth: 1,
-            backgroundColor: ds.region?.map(a => this.REGIONS[a] ?? "#000000") ?? "#000000",
+            backgroundColor: ds.region?.map(a => this.colourScheme[a] ?? "#000000") ?? "#000000",
             borderColor: "#000000",
             // @ts-ignore
             tooltip: {
@@ -315,17 +318,20 @@ class ScatterChart {
         this.chart.update();
     }
 
+    public updateColourScheme(colourScheme: string[]) {
+        Object.keys(this.colourScheme).forEach((key, index) => {
+            this.colourScheme[key] = colourScheme[index];
+        });
+
+        this.chart.data.datasets[0].backgroundColor = this.ds?.region?.map(a => this.colourScheme[a] ?? "#000000") ?? "#000000";
+        this.chart.update();
+    }
+
     ds: ChartDataset<[number, number], [string, string]> | null = null;
     chart: Chart<"scatter", [number, number][], string>;
-
-    REGIONS: { [key: string]: string } = {
-        'Africa': "#FF3900",        // red
-        'Asia': "#1BDE7E",          // green
-        'Europe': "#367DFF",        // blue
-        'North America': "#FBF52A", // yellow
-        'South America': "#DE951B", // orange
-        'Oceania': "#D701FF"        // purple
-    }
+    colourScheme: {
+        [key: string]: string;
+    };
 }
 
 export { BarChart, ScatterChart, Converter };

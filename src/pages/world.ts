@@ -7,7 +7,7 @@ import { BarChart, Converter, ScatterChart } from "../components/chart";
 import { CountryIds, Dataset } from "../utils/dataset";
 
 import { Selection } from "../components/selection";
-import { Threshold, ThresholdNumber } from "../components/options";
+import { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption } from "../components/options";
 import { symmetricLogarithm } from "../utils/scaling";
 
 // ====================================================================================================
@@ -35,7 +35,7 @@ worldMap.setCountryIds(ids);
 
 let converter = new Converter(countries, continents);
 let ranking = new BarChart("ranking");
-let correlations = new ScatterChart("correlation");
+let correlations = new ScatterChart("correlation", ColourSchemes.regions);
 
 // ====================================================================================================
 // Colour scaling function
@@ -197,7 +197,7 @@ let scaleSelection = new Selection({
     useOptionsGroups: false,
 });
 
-const threshold = new Threshold("threshold-selection",
+const threshold = new ThresholdOptions("threshold-selection",
     ColourSchemes.thresholdMono.map((v, i) => [ColourSchemes.thresholdMono.length - i, v]));
 
 threshold.setCallback(() => {
@@ -221,13 +221,39 @@ scaleSelection.element.onchange = () => {
 
 // ====================================================================================================
 // Ranking threshold
-const rankingThreshold = new ThresholdNumber("ranking-actions", [10, 100], "Highest Top ");
+
+const rankingThreshold = new ThresholdNumberOptions("ranking-actions", [10, 100], "Highest Top ");
 
 rankingThreshold.setCallback(() => {
     let limit = Number(rankingThreshold.control.value);
     ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
 });
 
+// ====================================================================================================
+// Correlations options
+
+const checkboxOption = new CheckBoxOption("regions-selection", "Colour Regions")
+checkboxOption.control.checked = true;
+const colourOptionsContainer = document.createElement("div");
+colourOptionsContainer.id = "correlation-colour-options";
+checkboxOption.element.appendChild(colourOptionsContainer);
+
+checkboxOption.setCallback(() => {
+    if (checkboxOption.control.checked) {
+        colourOptionsContainer.ariaDisabled = "false";
+        correlations.updateColourScheme(colourOptions.getColours());
+    } else {
+        colourOptionsContainer.ariaDisabled = "true";
+        correlations.updateColourScheme(["#4287f5", "#4287f5", "#4287f5", "#4287f5", "#4287f5", "#4287f5"]);
+    }
+});
+
+const colourOptions = new ColourOptions("correlation-colour-options",
+    Object.keys(ColourSchemes.regions).map(key => [key, ColourSchemes.regions[key]]));
+
+colourOptions.setCallback(() => {
+    correlations.updateColourScheme(colourOptions.getColours());
+});
 
 // ====================================================================================================
 

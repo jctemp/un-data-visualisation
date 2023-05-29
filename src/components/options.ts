@@ -85,6 +85,57 @@ class ThresholdOptions {
     element: HTMLElement;
 }
 
+class ColourOptions {
+    constructor(parentId: string, inputs: [string, string][]) {
+        const parent = document.getElementById(parentId);
+        if (parent == null) throw Error("The threshold parent does not exists.");
+        parent.classList.add("options-container");
+        this.element = parent;
+
+        this.controls = [];
+        inputs.forEach((values) => {
+            const [name, colour] = values;
+
+            const tuple = document.createElement("div");
+            tuple.classList.add("threshold-tuple");
+
+            const colourInput = document.createElement("input");
+            colourInput.type = "color";
+            colourInput.value = colour;
+            colourInput.classList.add("threshold-number");
+
+            const label = document.createElement("div");
+            label.innerText = name;
+            label.classList.add("threshold-label");
+            label.classList.add("threshold-label-fixed");
+
+            this.controls.push(colourInput);
+
+            tuple.append(label);
+            tuple.append(colourInput);
+            parent.append(tuple);
+        });
+    }
+
+    public setCallback(callback: () => void) {
+        this.controls.forEach((colourInput) => {
+            colourInput.onchange = callback;
+        });
+    }
+
+    public getColours(): string[] {
+        return this.controls.map((colourInput) => colourInput.value);
+    }
+
+    public setColours(colours: string[]) {
+        this.controls.forEach((colourInput, index) => {
+            colourInput.value = colours[index];
+        });
+    }
+
+    controls: HTMLInputElement[];
+    element: HTMLElement;
+}
 
 class ThresholdNumberOptions {
     constructor(parentId: string, range: [number, number], prefix: string) {
@@ -134,7 +185,42 @@ class ThresholdNumberOptions {
     control: HTMLInputElement;
     element: HTMLElement;
 }
-export { ThresholdOptions as Threshold, ThresholdNumberOptions as ThresholdNumber };
+
+class CheckBoxOption {
+    constructor(parentId: string, prefix: string) {
+        const parent = document.getElementById(parentId);
+        if (parent == null) throw Error("The threshold parent does not exists.");
+        parent.classList.add("options-container-extra");
+        this.element = parent;
+
+        const tuple = document.createElement("div");
+        tuple.classList.add("threshold-tuple");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.classList.add("option-checkbox");
+
+        const label = document.createElement("div");
+        label.innerText = prefix;
+        label.classList.add("threshold-label");
+        label.classList.add("threshold-label-fixed");
+
+        this.control = checkbox;
+
+        tuple.append(label);
+        tuple.append(checkbox);
+        parent.append(tuple);
+    }
+
+    public setCallback(callback: () => void) {
+        this.control.onchange = callback;
+    }
+
+    control: HTMLInputElement;
+    element: HTMLElement;
+}
+
+export { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption };
 
 
 

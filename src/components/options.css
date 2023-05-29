@@ -11,10 +11,37 @@
         @apply xl:flex-col xl:items-end;
 
         @apply relative top-0 right-0 mt-2;
-        @apply xl:absolute xl:top-40 xl:right-16;
+        @apply xl:absolute xl:top-20 xl:right-16;
 
         @apply transition-all duration-200;
     }
+
+    .options-container {
+        @apply absolute right-16 top-24;
+        @apply aria-disabled:-right-40 aria-disabled:hidden;
+
+        @apply flex gap-2 flex-wrap justify-start flex-row-reverse;
+        @apply 3xl:flex-col 3xl:items-end;
+
+        @apply relative top-0 right-0 mt-2;
+        @apply 3xl:absolute 3xl:top-16;
+
+        @apply transition-all duration-200;
+    }
+
+    .options-container-extra {
+        @apply absolute right-16 top-24;
+        @apply aria-disabled:-right-40;
+
+        @apply flex gap-2 flex-wrap justify-start flex-row-reverse;
+        @apply 3xl:flex-col 3xl:items-end;
+
+        @apply relative top-0 right-0 mt-2;
+        @apply 3xl:absolute 3xl:top-24 xl:right-16;
+
+        @apply transition-all duration-200;
+    }
+
 
     .threshold-container-relative {
         @apply aria-disabled:-right-40 aria-disabled:hidden;
@@ -29,13 +56,21 @@
         @apply font-semibold
     }
 
+    .threshold-label-fixed {
+        @apply w-32
+    }
+
     .threshold-tuple {
         @apply flex items-center gap-1 p-1;
-        @apply border;
+        @apply border bg-white;
     }
 
     .threshold-number {
         @apply border-none p-1 font-semibold w-24 h-8;
+    }
+
+    .option-checkbox {
+        @apply border-none p-1 font-semibold h-8;
     }
 
     .threshold-colour-after {

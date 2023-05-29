@@ -46,5 +46,13 @@ export class ColourSchemes {
     static readonly duo = ["#104DFF", "#FF8F02"];
     static readonly thresholdMono = ["#FFFFFF", "#FFECC2", "#FFD987", "#FFC13B", "#FAAC00", "#FF8F02"];
     static readonly thresholdDuo = ["#104DFF", "#5F96FF", "#C0D6FF", "#FFECC2", "#FFC13B", "#FF8F02"];
+    static readonly regions: { [key: string]: string } = {
+        'Africa': "#FF3900",        // red
+        'Asia': "#1BDE7E",          // green
+        'Europe': "#367DFF",        // blue
+        'North America': "#FBF52A", // yellow
+        'South America': "#DE951B", // orange
+        'Oceania': "#D701FF"        // purple
+    }
 }
 

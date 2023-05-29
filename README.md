@@ -2,7 +2,7 @@
 
 ## Todos
 
-- Scatter plot region toggling?
+...
 
 ## Our colour schemes
 
