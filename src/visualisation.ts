@@ -193,7 +193,6 @@ datasetBSelection.element.addEventListener("change", async () => {
     await datasetB.load(DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedDatasetB)!], selectedDatasetB);
     CHART_B_LABEL_SUFFIX.value = Units.mapping[selectedDatasetB];
 
-
     // 3. update correlations
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0), [datasetA.scaling.type, datasetB.scaling.type]);
 

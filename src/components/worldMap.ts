@@ -32,7 +32,7 @@ function countryMouseOver(mouseEvent: MouseEvent, d: any) {
         .transition()
         .duration(500)
         .style("display", "block")
-        .text(`${d.properties.name}: ${d.properties.value} ${MAP_LABEL_SUFFIX.value}`);
+        .text(`${d.properties.name}: ${d.properties.value}${MAP_LABEL_SUFFIX.value}`);
 }
 
 function countryMouseLeave() {

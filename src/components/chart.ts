@@ -144,7 +144,7 @@ class BarChart {
                         let index = this.ds?.labels.findIndex(a => a === context.label);
                         if (index === undefined || index === -1) return "";
                         let value = this.ds?.data[index];
-                        return `${value?.toFixed(1)} ${CHART_A_LABEL_SUFFIX.value}`;
+                        return `${value?.toFixed(1)}${CHART_A_LABEL_SUFFIX.value}`;
                     }
                 }
             }
@@ -249,7 +249,7 @@ class ScatterChart {
                             y = inverseSymmetricLogarithm(y);
                         }
 
-                        const values = `(${x.toFixed(1)} ${CHART_A_LABEL_SUFFIX.value}, ${y.toFixed(1)} ${CHART_B_LABEL_SUFFIX.value})`;
+                        const values = `(${x.toFixed(1)}${CHART_A_LABEL_SUFFIX.value}, ${y.toFixed(1)}${CHART_B_LABEL_SUFFIX.value})`;
                         return `${label}: ${values}`;
                     }
                 }
