@@ -1,14 +1,14 @@
 import * as d3 from "d3";
 
-import { ColourSchemes, DatasetOptions, Descriptions } from "../constants";
+import { ColourSchemes, DatasetOptions, Descriptions } from "./constants";
 
-import { WorldMap } from "../components/worldMap";
-import { BarChart, Converter, ScatterChart } from "../components/chart";
-import { CountryIds, Dataset } from "../utils/dataset";
+import { WorldMap } from "./components/worldMap";
+import { BarChart, Converter, ScatterChart } from "./components/chart";
+import { CountryIds, Dataset } from "./utils/dataset";
 
-import { Selection } from "../components/selection";
-import { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption } from "../components/options";
-import { symmetricLogarithm } from "../utils/scaling";
+import { Selection } from "./components/selection";
+import { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption } from "./components/options";
+import { symmetricLogarithm } from "./utils/scaling";
 
 // ====================================================================================================
 // Create the world map and load an initial dataset
