@@ -3,7 +3,6 @@ import "./chart.css";
 import { Dataset } from "../utils/dataset";
 import Chart from 'chart.js/auto';
 import { inverseSymmetricLogarithm, symmetricLogarithm } from "../utils/scaling";
-import { ColourSchemes } from "../constants";
 
 class Converter {
     constructor(countryMapping: Map<string, string>, continentMapping: Map<string, string>) {
@@ -123,6 +122,11 @@ class BarChart {
             if (index === -1) index = thresholds.length - 1;
             return colour[index];
         });
+
+        this.chart.options.plugins!.title = {
+            display: true,
+            text: ds.name
+        };
 
         this.chart.data.datasets = [{
             label: ds.name,

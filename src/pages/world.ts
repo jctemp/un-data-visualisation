@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-import { ColourSchemes, DatasetOptions } from "../constants";
+import { ColourSchemes, DatasetOptions, Descriptions } from "../constants";
 
 import { WorldMap } from "../components/worldMap";
 import { BarChart, Converter, ScatterChart } from "../components/chart";
@@ -109,10 +109,15 @@ let datasetYearSelection = new Selection({
     useOptionsGroups: false,
 });
 
+let ds_description = document.getElementById("ds-description")!;
+ds_description.innerText = Descriptions.mapping[DatasetOptions.ecology[0]];
+
 datasetASelection.element.onchange = async () => {
     // 1. get selected option and path
     const selectedOption = datasetASelection.element.value;
     const path = DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedOption)!];
+
+    ds_description.innerText = Descriptions.mapping[selectedOption];
 
     // 2. load dataset and update dataset year selection
     await datasetA.load(path, selectedOption);

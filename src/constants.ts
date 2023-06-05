@@ -56,3 +56,48 @@ export class ColourSchemes {
     }
 }
 
+export class Descriptions {
+    // important descriptions
+    static readonly desc_permanent_crops = "Crops which continue to be harvested for five or more years after planting and which do not need replanting after each harvest. Examples include cocoa, coffee, and rubber.";
+    static readonly desc_balance_of_payments_current_account = "The current account is the sum of the balance of trade (exports minus imports of goods and services), net factor income (such as interest and dividends) and net transfer payments (such as foreign aid).";
+    static readonly desc_balance_of_payments_financial_account = "The financial account is the sum of direct investment, portfolio investment, and other investment.";
+    static readonly desc_population_density = "Population density is midyear population divided by land area in square kilometers. Population is based on the de facto definition of population, which counts all residents regardless of legal status or citizenship.";
+
+    // secondary descriptions
+    static readonly desc_arable_land = "Arable land includes land defined by the FAO as land under temporary crops (double-cropped areas are counted once), temporary meadows for mowing or for pasture, land under market or kitchen gardens, and land temporarily fallow. Land abandoned as a result of shifting cultivation is excluded.";
+    static readonly desc_emissions_per_capita = "Carbon dioxide emissions are those stemming from the burning of fossil fuels and the manufacture of cement. They include carbon dioxide produced during consumption of solid, liquid, and gas fuels and gas flaring.";
+    static readonly desc_forest_cover = "Forest area is land under natural or planted stands of trees of at least 5 meters in situ, whether productive or not, and excludes tree stands in agricultural production systems (for example, in fruit plantations and agroforestry systems) and trees in urban parks and gardens.";
+    static readonly desc_important_sites_for_terrestrial_biodiversity_protected = "Important sites for terrestrial biodiversity protected are those areas of particular importance for biodiversity conservation, including areas contributing to the protection of species, habitats, and ecosystem services of outstanding universal value.";
+    static readonly desc_gdp_per_capita = "GDP per capita is gross domestic product divided by midyear population. GDP is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products.";
+    static readonly desc_gdp_real_rates_of_growth = "Annual percentage growth rate of GDP at market prices based on constant local currency. Aggregates are based on constant 2010 U.S. dollars. GDP is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products.";
+    static readonly desc_grants_of_patents = "Patent applications are worldwide patent applications filed through the Patent Cooperation Treaty procedure or with a national patent office for exclusive rights for an invention--a product or process that provides a new way of doing something or offers a new technical solution to a problem.";
+    static readonly desc_infant_mortality = "Infant mortality rate is the number of infants dying before reaching one year of age, per 1,000 live births in a given year.";
+    static readonly desc_life_expectancy = "Life expectancy at birth indicates the number of years a newborn infant would live if prevailing patterns of mortality at the time of its birth were to stay the same throughout its life.";
+    static readonly desc_percentage_of_individuals_using_the_internet = "Percentage of individuals using the Internet is the estimated percentage of the population that use the Internet. Internet users are individuals who have used the Internet (from any location) in the last 3 months.";
+    static readonly desc_population_aged_0_to_14_years_old = "Population aged 0 to 14 years old is the percentage of total population aged 0 to 14 years old.";
+    static readonly desc_population_aged_60_years_old = "Population aged 60+ years old is the percentage of total population aged 60 years old and above.";
+    static readonly desc_population_annual_rate_of_increase = "Population annual rate of increase is the exponential rate of growth of midyear population, excluding the effect of migration.";
+    static readonly desc_population_mid_year_estimates = "Population mid-year estimates is the number of inhabitants of a country or region as of July 1 of the year indicated. Population is based on the de facto definition of population, which counts all residents regardless of legal status or citizenship.";
+
+    static readonly mapping: { [key: string]: string } = {
+        "Arable land (percent of total land area)": Descriptions.desc_arable_land,
+        "Emissions per capita (metric tons of carbon dioxide)": Descriptions.desc_emissions_per_capita,
+        "Forest cover (percent of total land area)": Descriptions.desc_forest_cover,
+        "Important sites for terrestrial biodiversity protected (percent of total sites protected)": Descriptions.desc_important_sites_for_terrestrial_biodiversity_protected,
+        "Permanent crops (percent of total land area)": Descriptions.desc_permanent_crops,
+        "Balance of Payments Current account (millions of US dollars)": Descriptions.desc_balance_of_payments_current_account,
+        "Balance of Payments Financial account (millions of US dollars)": Descriptions.desc_balance_of_payments_financial_account,
+        "GDP per capita (US dollars)": Descriptions.desc_gdp_per_capita,
+        "GDP real rates of growth (percent)": Descriptions.desc_gdp_real_rates_of_growth,
+        "Grants of patents (number)": Descriptions.desc_grants_of_patents,
+        "Infant mortality for both sexes (per 1,000 live births)": Descriptions.desc_infant_mortality,
+        "Life expectancy at birth for both sexes (years)": Descriptions.desc_life_expectancy,
+        "Percentage of individuals using the internet": Descriptions.desc_percentage_of_individuals_using_the_internet,
+        "Population aged 0 to 14 years old (percentage)": Descriptions.desc_population_aged_0_to_14_years_old,
+        "Population aged 60+ years old (percentage)": Descriptions.desc_population_aged_60_years_old,
+        "Population annual rate of increase (percent)": Descriptions.desc_population_annual_rate_of_increase,
+        "Population density": Descriptions.desc_population_density,
+        "Population mid-year estimates (millions)": Descriptions.desc_population_mid_year_estimates,
+    }
+}
+
