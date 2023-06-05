@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 
-import { ColourSchemes, DatasetOptions, Descriptions } from "./constants";
+import { ColourSchemes, DatasetOptions, Descriptions, Units } from "./constants";
 
-import { WorldMap } from "./components/worldMap";
-import { BarChart, Converter, ScatterChart } from "./components/chart";
+import { MAP_LABEL_SUFFIX, WorldMap } from "./components/worldMap";
+import { BarChart, CHART_A_LABEL_SUFFIX, CHART_B_LABEL_SUFFIX, Converter, ScatterChart } from "./components/chart";
 import { CountryIds, Dataset } from "./utils/dataset";
 
 import { Selection } from "./components/selection";
@@ -112,12 +112,18 @@ let datasetYearSelection = new Selection({
 let ds_description = document.getElementById("ds-description")!;
 ds_description.innerText = Descriptions.mapping[DatasetOptions.ecology[0]];
 
+MAP_LABEL_SUFFIX.value = Units.mapping[DatasetOptions.ecology[0]];
+CHART_A_LABEL_SUFFIX.value = Units.mapping[DatasetOptions.ecology[0]];
+
 datasetASelection.element.onchange = async () => {
     // 1. get selected option and path
     const selectedOption = datasetASelection.element.value;
     const path = DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedOption)!];
 
     ds_description.innerText = Descriptions.mapping[selectedOption];
+    // LABEL_SUFFIX = Units.mapping[selectedOption];
+    MAP_LABEL_SUFFIX.value = Units.mapping[selectedOption];
+    CHART_A_LABEL_SUFFIX.value = Units.mapping[selectedOption];
 
     // 2. load dataset and update dataset year selection
     await datasetA.load(path, selectedOption);
@@ -177,6 +183,7 @@ let datasetBSelection = new Selection({
     useOptionsGroups: true,
 });
 datasetBSelection.element.value = DatasetOptions.ecology[2];
+CHART_B_LABEL_SUFFIX.value = Units.mapping[DatasetOptions.ecology[2]];
 
 datasetBSelection.element.addEventListener("change", async () => {
     // 1. get selected options
@@ -184,6 +191,8 @@ datasetBSelection.element.addEventListener("change", async () => {
 
     // 2. load dataset and update dataset year selection
     await datasetB.load(DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedDatasetB)!], selectedDatasetB);
+    CHART_B_LABEL_SUFFIX.value = Units.mapping[selectedDatasetB];
+
 
     // 3. update correlations
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0), [datasetA.scaling.type, datasetB.scaling.type]);

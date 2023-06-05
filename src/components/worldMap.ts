@@ -5,7 +5,9 @@ import * as d3 from "d3";
 import { Feature, FeatureCollection, Geometry } from "geojson";
 import { TARGET_PROPERTY } from "../constants";
 import { CountryIds } from "../utils/dataset";
+import { SingleValue } from "../utils/container";
 
+export const MAP_LABEL_SUFFIX = new SingleValue<string>(" (unknown)");
 
 function countryMouseOver(mouseEvent: MouseEvent, d: any) {
     d3.selectAll(".country")
@@ -30,7 +32,7 @@ function countryMouseOver(mouseEvent: MouseEvent, d: any) {
         .transition()
         .duration(500)
         .style("display", "block")
-        .text(`${d.properties.name}: ${d.properties.value}`);
+        .text(`${d.properties.name}: ${d.properties.value} ${MAP_LABEL_SUFFIX.value}`);
 }
 
 function countryMouseLeave() {

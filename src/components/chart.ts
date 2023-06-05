@@ -3,6 +3,7 @@ import "./chart.css";
 import { Dataset } from "../utils/dataset";
 import Chart from 'chart.js/auto';
 import { inverseSymmetricLogarithm, symmetricLogarithm } from "../utils/scaling";
+import { SingleValue } from "../utils/container";
 
 class Converter {
     constructor(countryMapping: Map<string, string>, continentMapping: Map<string, string>) {
@@ -74,6 +75,9 @@ interface ChartDataset<T, R> {
     region?: string[],
 }
 
+export const CHART_A_LABEL_SUFFIX = new SingleValue<string>(" (unknown)");
+export const CHART_B_LABEL_SUFFIX = new SingleValue<string>(" (unknown)");
+
 class BarChart {
     constructor(elementId: string) {
         let html = document.getElementById(elementId) as HTMLCanvasElement | null;
@@ -140,7 +144,7 @@ class BarChart {
                         let index = this.ds?.labels.findIndex(a => a === context.label);
                         if (index === undefined || index === -1) return "";
                         let value = this.ds?.data[index];
-                        return `${value?.toFixed(1)}`;
+                        return `${value?.toFixed(1)} ${CHART_A_LABEL_SUFFIX.value}`;
                     }
                 }
             }
@@ -207,8 +211,6 @@ class ScatterChart {
 
         let working = Array.from(ds.data.entries());
         working = working.filter(a => !isNaN(a[1][0]) && !isNaN(a[1][1]));
-        let minX = Math.min(...working.map(a => a[1][0]));
-        let minY = Math.min(...working.map(a => a[1][1]));
 
         if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
             working = working.map(a => {
@@ -247,7 +249,7 @@ class ScatterChart {
                             y = inverseSymmetricLogarithm(y);
                         }
 
-                        const values = `(${x.toFixed(1)}, ${y.toFixed(1)})`;
+                        const values = `(${x.toFixed(1)} ${CHART_A_LABEL_SUFFIX.value}, ${y.toFixed(1)} ${CHART_B_LABEL_SUFFIX.value})`;
                         return `${label}: ${values}`;
                     }
                 }

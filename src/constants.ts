@@ -101,3 +101,25 @@ export class Descriptions {
     }
 }
 
+export class Units {
+    static readonly mapping: { [key: string]: string } = {
+        "Arable land (percent of total land area)": "%",
+        "Emissions per capita (metric tons of carbon dioxide)": "metric tons",
+        "Forest cover (percent of total land area)": "%",
+        "Important sites for terrestrial biodiversity protected (percent of total sites protected)": "%",
+        "Permanent crops (percent of total land area)": "%",
+        "Balance of Payments Current account (millions of US dollars)": "millions of US dollars",
+        "Balance of Payments Financial account (millions of US dollars)": "millions of US dollars",
+        "GDP per capita (US dollars)": "US dollars",
+        "GDP real rates of growth (percent)": "%",
+        "Grants of patents (number)": "",
+        "Infant mortality for both sexes (per 1,000 live births)": "per 1,000 live births",
+        "Life expectancy at birth for both sexes (years)": "years",
+        "Percentage of individuals using the internet": "%",
+        "Population aged 0 to 14 years old (percentage)": "%",
+        "Population aged 60+ years old (percentage)": "%",
+        "Population annual rate of increase (percent)": "%",
+        "Population density": "people per square kilometer",
+        "Population mid-year estimates (millions)": "millions",
+    }
+}
