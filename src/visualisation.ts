@@ -240,6 +240,7 @@ let scaleSelection = new Selection({
     options: ["Linear", "Logarithmic", "Threshold"],
     useOptionsGroups: false,
 });
+scaleSelection.element.value = "Threshold";
 
 const threshold = new ThresholdOptions("threshold-selection",
     ColourSchemes.thresholdMono.map((v, i) => [ColourSchemes.thresholdMono.length - i, v]));
