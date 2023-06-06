@@ -28,8 +28,8 @@ function countryMouseOver(mouseEvent: MouseEvent, d: any) {
 
     if (isNaN(d.properties.value) || d.properties.value === null || d.properties.value === undefined) return;
     d3.select(".tooltip")
-        .style("left", mouseEvent.clientX + offsetX + "px")
-        .style("top", mouseEvent.clientY - offsetY + scrollY + "px")
+        .style("left", mouseEvent.clientX + offsetX + 15 + "px")
+        .style("top", mouseEvent.clientY - offsetY + scrollY - 28 + "px")
         .transition()
         .duration(500)
         .style("display", "block")
@@ -47,6 +47,33 @@ function countryMouseLeave() {
         .transition()
         .duration(500)
         .style("display", "none");
+}
+
+function countryMouseClick(_mouseEvent: MouseEvent, d: any) {
+    if (d !== undefined && WorldMap.focus !== d) {
+        WorldMap.focus = d;
+        let centroid = WorldMap.pathGenerator.centroid(d);
+        let x = centroid[0];
+        let y = centroid[1];
+        let k = 3;
+        let translate = [
+            WorldMap.container.clientWidth / 2 - k * x,
+            WorldMap.container.clientHeight / 2 - k * y
+        ];
+
+        d3.select(`#${WorldMap.id}`)
+            .select("g")
+            .transition()
+            .duration(750)
+            .attr("transform", `translate(${translate})scale(${k})`);
+    } else {
+        WorldMap.focus = null;
+        d3.select(`#${WorldMap.id}`)
+            .select("g")
+            .transition()
+            .duration(750)
+            .attr("transform", "");
+    }
 }
 
 type Scale = d3.ScaleLinear<any, any> | d3.ScaleLogarithmic<any, any> | d3.ScaleThreshold<any, any>;
@@ -98,7 +125,7 @@ class WorldMap {
      * @param scale is a function that maps values to a color value.
      */
     public updateChart() {
-        d3.select(`#${this.id}`)
+        d3.select(`#${WorldMap.id}`)
             .select("g")
             .selectAll("path")
             .data(this.data)
@@ -133,27 +160,33 @@ class WorldMap {
     }
 
     private constructor(id: string, tooltipId: string, data: Feature<Geometry, GeoProperties>[]) {
-        const container = document.getElementById(id);
-        if (container == null) throw Error("The map container does not exists.");
+        WorldMap.id = id;
+        WorldMap.container = document.getElementById(id)!;
 
         d3.select(`#${tooltipId}`)
             .classed("tooltip", true)
             .style("display", "none");
 
+        // create background
+        d3.select(`#${WorldMap.id}`)
+            .append("rect")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("fill", "#ffffff")
+            .on("click", countryMouseClick);
+
         this.data = data;
-        this.id = id;
 
+        const width = WorldMap.container.clientWidth;
+        const height = WorldMap.container.clientHeight;
 
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-
-        const pathGenerator = d3.geoPath();
+        WorldMap.pathGenerator = d3.geoPath();
         const projection = d3.geoNaturalEarth1()
             .scale(width / (2 * Math.PI))
             .translate([width / 2, height / 1.7])
-        pathGenerator.projection(projection)
+        WorldMap.pathGenerator.projection(projection)
 
-        const map = d3.select(`#${this.id}`)
+        const map = d3.select(`#${WorldMap.id}`)
             .append("g");
 
         const selection = map.selectAll("path")
@@ -161,31 +194,35 @@ class WorldMap {
 
         selection.enter().append("path")
             .classed("country", true)
-            .attr("d", pathGenerator)
+            .attr("d", WorldMap.pathGenerator)
             .attr("fill", _ => "url(#unknown)");
 
         new ResizeObserver(() => {
-            const width = container.clientWidth;
-            const height = container.clientHeight;
+            const width = WorldMap.container.clientWidth;
+            const height = WorldMap.container.clientHeight;
             const projection = d3.geoNaturalEarth1()
                 .scale(width / (2 * Math.PI))
-                .translate([width / 2, height / 1.7])
-            pathGenerator.projection(projection);
+                .translate([width / 2, height / 1.7]);
+            WorldMap.pathGenerator.projection(projection);
 
-            d3.select(`#${this.id}`)
+            d3.select(`#${WorldMap.id}`)
                 .select("g")
                 .selectAll("path")
                 .data(this.data)
                 // @ts-ignore cannot infer type
                 .on("mouseover", countryMouseOver)
                 .on("mouseleave", countryMouseLeave)
-                .attr("d", pathGenerator);
-        }).observe(container);
+                .on("click", countryMouseClick)
+                .attr("d", WorldMap.pathGenerator);
+        }).observe(WorldMap.container);
     }
 
-    private id: string;
-    public data: Feature<Geometry, GeoProperties>[];
+    static container: HTMLElement;
+    static pathGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects>;
+    static focus: Feature<Geometry, GeoProperties> | null = null;
+    static id: string;
 
+    public data: Feature<Geometry, GeoProperties>[];
     public scale: Scale | null = null;
 }
 
