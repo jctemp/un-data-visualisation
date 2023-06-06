@@ -35,7 +35,7 @@
     }
 
     .colour-container {
-        @apply absolute right-16 top-24;
+        @apply aria-disabled:-right-80 aria-disabled:hidden;
 
         @apply flex gap-2 flex-wrap justify-start flex-row-reverse;
         @apply 3xl:flex-col 3xl:items-end;
