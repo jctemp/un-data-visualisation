@@ -275,6 +275,12 @@ rankingThreshold.setCallback(() => {
 // ====================================================================================================
 // Correlations options
 
+const dotSize = new ThresholdNumberOptions("regions-selection", [1, 5], "Dot Size ");
+dotSize.control.value = "3";
+dotSize.setCallback(() => {
+    correlations.updateDotSize(Number(dotSize.control.value));
+});
+
 const checkboxOption = new CheckBoxOption("regions-selection", "Colour Regions")
 checkboxOption.control.checked = true;
 const colourOptionsContainer = document.createElement("div");

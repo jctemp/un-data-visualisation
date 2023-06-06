@@ -310,6 +310,11 @@ class ScatterChart {
         this.chart.update();
     }
 
+    public updateDotSize(size: number) {
+        this.chart.data.datasets[0].pointRadius = size;
+        this.chart.update();
+    }
+
     public updateColourScheme(colourScheme: string[]) {
         Object.keys(this.colourScheme).forEach((key, index) => {
             this.colourScheme[key] = colourScheme[index];
