@@ -89,7 +89,7 @@ class ColourOptions {
     constructor(parentId: string, inputs: [string, string][]) {
         const parent = document.getElementById(parentId);
         if (parent == null) throw Error("The threshold parent does not exists.");
-        parent.classList.add("options-container");
+        parent.classList.add("colour-container");
         this.element = parent;
 
         this.controls = [];
@@ -138,10 +138,14 @@ class ColourOptions {
 }
 
 class ThresholdNumberOptions {
-    constructor(parentId: string, range: [number, number], prefix: string) {
+    constructor(parentId: string, range: [number, number], prefix: string, flag: boolean = false) {
         const parent = document.getElementById(parentId);
         if (parent == null) throw Error("The threshold parent does not exists.");
-        parent.classList.add("threshold-container-relative");
+        if (flag) {
+            parent.classList.add("options-container-extra");
+            parent.classList.add("flex");
+            parent.classList.add("flex-row-reverse");
+        }
         this.element = parent;
 
         const [min, max] = range;
@@ -191,7 +195,6 @@ class CheckBoxOption {
     constructor(parentId: string, prefix: string) {
         const parent = document.getElementById(parentId);
         if (parent == null) throw Error("The threshold parent does not exists.");
-        parent.classList.add("options-container-extra");
         this.element = parent;
 
         const tuple = document.createElement("div");
@@ -221,7 +224,34 @@ class CheckBoxOption {
     element: HTMLElement;
 }
 
-export { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption };
+class ResetOption {
+    constructor(parentId: string, label: string) {
+        const parent = document.getElementById(parentId);
+        if (parent == null) throw Error("The threshold parent does not exists.");
+        this.element = parent;
+
+        const tuple = document.createElement("div");
+        tuple.classList.add("threshold-tuple");
+
+        const button = document.createElement("button");
+        button.classList.add("option-button");
+        button.innerText = label;
+
+        this.control = button;
+
+        tuple.append(button);
+        parent.append(tuple);
+    }
+
+    public setCallback(callback: () => void) {
+        this.control.addEventListener("click", callback);
+    }
+
+    control: HTMLButtonElement;
+    element: HTMLElement;
+}
+
+export { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption, ResetOption };
 
 
 

@@ -192,7 +192,7 @@ class ScatterChart {
         let html = document.getElementById(elementId) as HTMLCanvasElement | null;
         if (html === null) throw new Error("Could not find ranking canvas");
 
-        this.colourScheme = colourScheme;
+        this.colourScheme = JSON.parse(JSON.stringify(colourScheme));
 
         this.chart = new Chart(html, {
             type: "scatter",

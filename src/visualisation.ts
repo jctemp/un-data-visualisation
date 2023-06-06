@@ -7,7 +7,7 @@ import { BarChart, CHART_A_LABEL_SUFFIX, CHART_B_LABEL_SUFFIX, Converter, Scatte
 import { CountryIds, Dataset } from "./utils/dataset";
 
 import { Selection } from "./components/selection";
-import { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption } from "./components/options";
+import { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption, ResetOption } from "./components/options";
 import { symmetricLogarithm } from "./utils/scaling";
 
 // ====================================================================================================
@@ -122,7 +122,6 @@ datasetASelection.element.onchange = async () => {
     const path = DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedOption)!];
 
     ds_description.innerText = Descriptions.mapping[selectedOption];
-    // LABEL_SUFFIX = Units.mapping[selectedOption];
     MAP_LABEL_SUFFIX.value = Units.mapping[selectedOption];
     CHART_A_LABEL_SUFFIX.value = Units.mapping[selectedOption];
 
@@ -219,6 +218,7 @@ datasetBSelection.element.addEventListener("change", async () => {
 
     // 3. update correlations
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, Number(correlationYears[0])), [datasetA.scaling.type, datasetB.scaling.type]);
+    correlations.updateDotSize(Number(dotSize.control.value))
 });
 
 datasetsYearSelection.element.addEventListener("change", () => {
@@ -227,6 +227,7 @@ datasetsYearSelection.element.addEventListener("change", () => {
 
     // 2. update correlations
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, datasetB.yearCurrent), [datasetA.scaling.type, datasetB.scaling.type]);
+    correlations.updateDotSize(Number(dotSize.control.value))
 });
 
 
@@ -242,6 +243,24 @@ let scaleSelection = new Selection({
 
 const threshold = new ThresholdOptions("threshold-selection",
     ColourSchemes.thresholdMono.map((v, i) => [ColourSchemes.thresholdMono.length - i, v]));
+
+const resetThresholds = new ResetOption("threshold-selection", "Reset");
+
+resetThresholds.setCallback(() => {
+    let colourSchema = datasetA.scaling.colourScheme === "Mono" ? ColourSchemes.thresholdMono : ColourSchemes.thresholdDuo;
+    let values = calculateThresholds(colourSchema, datasetA.range);
+    threshold.setThresholds(values);
+
+    // update world map
+    worldMap.scale = d3.scaleThreshold<any, any>()
+        .domain(threshold.getThresholds())
+        .range(threshold.getColours());
+    worldMap.updateChart();
+
+    // update ranking
+    let limit = Number(rankingThreshold.control.value);
+    ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
+});
 
 threshold.setCallback(() => {
     worldMap.scale = d3.scaleThreshold<any, any>()
@@ -275,11 +294,13 @@ rankingThreshold.setCallback(() => {
 // ====================================================================================================
 // Correlations options
 
-const dotSize = new ThresholdNumberOptions("regions-selection", [1, 5], "Dot Size ");
+const dotSize = new ThresholdNumberOptions("regions-selection", [1, 5], "Dot Size ", true);
 dotSize.control.value = "3";
 dotSize.setCallback(() => {
     correlations.updateDotSize(Number(dotSize.control.value));
 });
+
+const resetColours = new ResetOption("regions-selection", "Reset");
 
 const checkboxOption = new CheckBoxOption("regions-selection", "Colour Regions")
 checkboxOption.control.checked = true;
@@ -290,12 +311,20 @@ checkboxOption.element.appendChild(colourOptionsContainer);
 checkboxOption.setCallback(() => {
     if (checkboxOption.control.checked) {
         colourOptionsContainer.ariaDisabled = "false";
+        resetColours.control.disabled = false;
         correlations.updateColourScheme(colourOptions.getColours());
     } else {
         colourOptionsContainer.ariaDisabled = "true";
+        resetColours.control.disabled = true;
         correlations.updateColourScheme(["#4287f5", "#4287f5", "#4287f5", "#4287f5", "#4287f5", "#4287f5"]);
     }
 });
+
+resetColours.setCallback(() => {
+    colourOptions.setColours(Object.keys(ColourSchemes.regions).map(key => ColourSchemes.regions[key]));
+    correlations.updateColourScheme(colourOptions.getColours());
+});
+
 
 const colourOptions = new ColourOptions("correlation-colour-options",
     Object.keys(ColourSchemes.regions).map(key => [key, ColourSchemes.regions[key]]));
