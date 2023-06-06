@@ -129,6 +129,12 @@ datasetASelection.element.onchange = async () => {
     // 2. load dataset and update dataset year selection
     await datasetA.load(path, selectedOption);
     datasetYearSelection.update(datasetA.years.map(year => year.toString()));
+    const correlationYears = datasetA.years.map(year => year.toString()).filter(x => datasetB.years.map(year => year.toString()).includes(x));
+    if (correlationYears.length === 0) {
+        datasetsYearSelection.update(["latest"]);
+    } else {
+        datasetsYearSelection.update(correlationYears);
+    }
 
     // 3. update world map
     worldMap.updateData(datasetA.byYear(datasetA.yearCurrent)!);
@@ -155,7 +161,7 @@ datasetASelection.element.onchange = async () => {
     ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
 
     // 7. update correlations
-    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0), [datasetA.scaling.type, datasetB.scaling.type]);
+    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, Number(correlationYears[0])), [datasetA.scaling.type, datasetB.scaling.type]);
 };
 
 datasetYearSelection.element.onchange = () => {
@@ -187,6 +193,14 @@ let datasetBSelection = new Selection({
 datasetBSelection.element.value = DatasetOptions.ecology[2];
 CHART_B_LABEL_SUFFIX.value = Units.mapping[DatasetOptions.ecology[2]];
 
+
+let datasetsYearSelection = new Selection({
+    parentId: "correlation-actions",
+    selectName: "Correlations-Year",
+    options: datasetA.years.map(year => year.toString()).filter(x => datasetB.years.map(year => year.toString()).includes(x)),
+    useOptionsGroups: false,
+});
+
 datasetBSelection.element.addEventListener("change", async () => {
     // 1. get selected options
     const selectedDatasetB = datasetBSelection.element.value;
@@ -195,10 +209,26 @@ datasetBSelection.element.addEventListener("change", async () => {
     await datasetB.load(DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedDatasetB)!], selectedDatasetB);
     CHART_B_LABEL_SUFFIX.value = Units.mapping[selectedDatasetB];
 
-    // 3. update correlations
-    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0), [datasetA.scaling.type, datasetB.scaling.type]);
+    const correlationYears = datasetA.years.map(year => year.toString()).filter(x => datasetB.years.map(year => year.toString()).includes(x));
+    if (correlationYears.length === 0) {
+        datasetsYearSelection.update(["latest"]);
+    } else {
+        datasetsYearSelection.update(correlationYears);
+    }
 
+
+    // 3. update correlations
+    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, Number(correlationYears[0])), [datasetA.scaling.type, datasetB.scaling.type]);
 });
+
+datasetsYearSelection.element.addEventListener("change", () => {
+    // 1. get selected option
+    datasetB.yearCurrent = Number(datasetsYearSelection.element.value);
+
+    // 2. update correlations
+    correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, datasetB.yearCurrent), [datasetA.scaling.type, datasetB.scaling.type]);
+});
+
 
 // ====================================================================================================
 // Scale selection
@@ -283,4 +313,4 @@ threshold.setThresholds(values);
 let limit = Number(rankingThreshold.control.value);
 ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
 
-correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, 0), [datasetA.scaling.type, datasetB.scaling.type]);
+correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, Number(datasetsYearSelection.element.options[0].value)), [datasetA.scaling.type, datasetB.scaling.type]);

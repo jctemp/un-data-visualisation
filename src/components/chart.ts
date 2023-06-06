@@ -35,10 +35,18 @@ class Converter {
         };
     }
 
-    toChartDatasetScatter(ds1: Dataset, ds2: Dataset, year_index: number): ChartDataset<[number, number], [string, string]> {
-        let data1 = ds1.byYear(ds1.years[year_index]);
-        let data2 = ds2.byYear(ds2.years[year_index]);
+    toChartDatasetScatter(ds1: Dataset, ds2: Dataset, year: number): ChartDataset<[number, number], [string, string]> {
+        let yearIndex = ds1.years.findIndex(a => a === year);
+        let yearIndex2 = ds2.years.findIndex(a => a === year);
 
+        if (yearIndex === -1) {
+            yearIndex = ds1.years.length - 1;
+            yearIndex2 = ds2.years.length - 1;
+        }
+
+        let data1 = ds1.byYear(ds1.years[yearIndex]);
+        let data2 = ds2.byYear(ds2.years[yearIndex2]);
+        
         if (data1 === null || data2 === null) {
             return {
                 name: [ds1.name, ds2.name],
