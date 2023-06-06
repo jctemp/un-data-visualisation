@@ -4,6 +4,11 @@ import { Dataset } from "../utils/dataset";
 import Chart from 'chart.js/auto';
 import { inverseSymmetricLogarithm, symmetricLogarithm } from "../utils/scaling";
 import { SingleValue } from "../utils/container";
+import annotationPlugin from 'chartjs-plugin-annotation';
+import { PCA } from "ml-pca";
+import { SVD, covariance } from "ml-matrix";
+
+Chart.register(annotationPlugin);
 
 class Converter {
     constructor(countryMapping: Map<string, string>, continentMapping: Map<string, string>) {
@@ -46,7 +51,7 @@ class Converter {
 
         let data1 = ds1.byYear(ds1.years[yearIndex]);
         let data2 = ds2.byYear(ds2.years[yearIndex2]);
-        
+
         if (data1 === null || data2 === null) {
             return {
                 name: [ds1.name, ds2.name],
@@ -68,6 +73,7 @@ class Converter {
             labels: Array.from(data.keys()).map(id => this.countryMapping.get(id)!),
             data: Array.from(data.values()),
             region: Array.from(data.keys()).map(id => this.continentMapping.get(id)!),
+            scaleType: [ds1.scaling.colourScheme, ds2.scaling.colourScheme],
         };
     }
 
@@ -80,6 +86,7 @@ interface ChartDataset<T, R> {
     name: R,
     labels: string[],
     data: T[],
+    scaleType?: [string, string],
     region?: string[],
 }
 
@@ -208,9 +215,8 @@ class ScatterChart {
                 },
                 responsive: true,
                 maintainAspectRatio: false,
-            }
+            },
         });
-
     }
 
     public update(ds: ChartDataset<[number, number], [string, string]>, scaleType: [string, string]) {
@@ -232,40 +238,159 @@ class ScatterChart {
             });
         }
 
+        // create matrix for each region
+        let regions = new Set<string>();
+        for (let i = 0; i < working.length; i++) {
+            regions.add(ds.region?.[working[i][0]] ?? "Unknown");
+        }
+
+        // create matrix for each region
+        let matrices: [number, number][][] = [];
+        for (let region of regions) {
+            let matrix = working.filter(a => ds.region?.[a[0]] === region).map(a => a[1]);
+            matrices.push(matrix);
+        }
+
+        // calculate the PCA for each region
+        let pcas: { [key: string]: PCA } = {};
+        for (let i = 0; i < regions.size; i++) {
+            let result = new PCA(matrices[i], { center: true });
+            pcas[Array.from(regions)[i]] = result;
+        }
+
+        let svds: { [key: string]: SVD } = {};
+        for (let i = 0; i < regions.size; i++) {
+            let result = new SVD(covariance(matrices[i]), { computeLeftSingularVectors: true, computeRightSingularVectors: true });
+            svds[Array.from(regions)[i]] = result;
+        }
+
+        // create ellipses for each region
+        let ellipses: [number, number, number, number, number][] = [];
+        for (let i = 0; i < regions.size; i++) {
+            let pca = pcas[Array.from(regions)[i]];
+            let svd = svds[Array.from(regions)[i]];
+
+            // get eigenvalues and eigenvectors
+            let eigenvectors = pca.getEigenvectors();
+            let eigenvalues = pca.getEigenvalues();
+
+            eigenvectors = svd.rightSingularVectors;
+            eigenvalues = svd.diagonal;
+
+            // get means
+            let means = pca.toJSON().means;
+
+            // compute the angle
+            let angle = Math.atan2(eigenvectors.get(1, 0), eigenvectors.get(0, 0));
+            if (angle < 0) angle += 2 * Math.PI;
+
+            // generate points on the ellipse
+            let points: [number, number][] = [];
+            const numberOfPoints = 100;
+            const chisquare = 1.6449;
+            for (let i = 0; i < numberOfPoints; i++) {
+                let theta = i / numberOfPoints * 2 * Math.PI;
+
+                let x = Math.cos(theta) * Math.sqrt(eigenvalues[0]) * chisquare + means[0];
+                let y = Math.sin(theta) * Math.sqrt(eigenvalues[1]) * chisquare + means[1];
+
+                points.push([x, y]);
+            }
+
+            // compute the min and max values for the x and y axis
+            let xMin = Math.min(...points.map(a => a[0]));
+            let xMax = Math.max(...points.map(a => a[0]));
+            let yMin = Math.min(...points.map(a => a[1]));
+            let yMax = Math.max(...points.map(a => a[1]));
+
+            if (xMax - xMin < 0.001) {
+                xMax += 0.01;
+                xMin -= 0.01;
+            }
+
+            if (yMax - yMin < .001) {
+                yMax += 0.1;
+                yMin -= 0.1;
+            }
+
+            ellipses.push([angle, xMin, xMax, yMin, yMax]);
+        }
+
+        // make colour scheme transparent
+        const transparentColourScheme = JSON.parse(JSON.stringify(this.colourScheme));
+        for (let key in transparentColourScheme) {
+            transparentColourScheme[key] = transparentColourScheme[key] + "30";
+        }
+
         this.chart.data.labels = ds.labels;
 
-        this.chart.data.datasets = [{
-            data: working.map(a => a[1]),
-            borderWidth: 1,
-            backgroundColor: ds.region?.map(a => this.colourScheme[a] ?? "#000000") ?? "#000000",
-            borderColor: "#000000",
-            // @ts-ignore
-            tooltip: {
-                callbacks: {
-                    label: (context: {
-                        parsed: { x: number, y: number }; label: any;
-                    }) => {
-                        const label = context.label;
-
-                        let x = context.parsed.x;
-                        if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
-                            x = inverseSymmetricLogarithm(x);
+        this.chart.options.plugins = {
+            legend: {
+                display: false,
+            },
+            annotation: {
+                annotations: {
+                    ...ellipses.map((a, i) => {
+                        return {
+                            type: "ellipse",
+                            xMin: a[1],
+                            xMax: a[2],
+                            yMin: a[3],
+                            yMax: a[4],
+                            backgroundColor: transparentColourScheme[Array.from(regions)[i]] ?? "#000000",
+                            borderColor: "#000000",
+                            borderWidth: 1,
+                            rotation: 180 * a[0] / Math.PI,
                         }
+                    }),
 
-                        let y = context.parsed.y;
-                        if (scaleTypeDsY === "Logarithmic" || scaleTypeDsY === "Threshold") {
-                            y = inverseSymmetricLogarithm(y);
+                },
+            }
+        },
+
+            this.chart.data.datasets = [{
+                data: working.map(a => a[1]),
+                borderWidth: 1,
+                backgroundColor: ds.region?.map(a => this.colourScheme[a] ?? "#000000") ?? "#000000",
+                borderColor: "#000000",
+                // @ts-ignore
+                tooltip: {
+                    callbacks: {
+                        label: (context: {
+                            parsed: { x: number, y: number }; label: any;
+                        }) => {
+                            const label = context.label;
+
+                            let x = context.parsed.x;
+                            if (scaleTypeDsX === "Logarithmic" || scaleTypeDsX === "Threshold") {
+                                x = inverseSymmetricLogarithm(x);
+                            }
+
+                            let y = context.parsed.y;
+                            if (scaleTypeDsY === "Logarithmic" || scaleTypeDsY === "Threshold") {
+                                y = inverseSymmetricLogarithm(y);
+                            }
+
+                            const values = `(${x.toFixed(1)}${CHART_A_LABEL_SUFFIX.value}, ${y.toFixed(1)}${CHART_B_LABEL_SUFFIX.value})`;
+                            return `${label}: ${values}`;
                         }
-
-                        const values = `(${x.toFixed(1)}${CHART_A_LABEL_SUFFIX.value}, ${y.toFixed(1)}${CHART_B_LABEL_SUFFIX.value})`;
-                        return `${label}: ${values}`;
                     }
                 }
-            }
-        }];
+            }];
+
+        let xMin = Math.min(...working.map(a => a[1][0]));
+        let xMax = Math.max(...working.map(a => a[1][0]));
+
+        let yMin = Math.min(...working.map(a => a[1][1]));
+        let yMax = Math.max(...working.map(a => a[1][1]));
+
+        let xRange = Math.max(Math.abs(xMin), Math.abs(xMax));
+        let yRange = Math.max(Math.abs(yMin), Math.abs(yMax));
 
         let scales = {
             x: {
+                min: ds.scaleType![0] === "Mono" && xMin > 10 ? 0 : xMin - xRange * 0.01,
+                max: xMax + xRange * 0.01,
                 title: {
                     display: true,
                     text: ds.name[0]
@@ -275,8 +400,10 @@ class ScatterChart {
                     callback: (value, _index, _values) => {
                         return Number(value).toFixed(1);
                     }
-                }
+                },
             }, y: {
+                min: ds.scaleType![1] === "Mono" && yMin > 10 ? 0 : yMin - yRange * 0.01,
+                max: yMax + yRange * 0.01,
                 title: {
                     display: true,
                     text: ds.name[1]
