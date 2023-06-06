@@ -26,6 +26,9 @@ export class DatasetOptions {
         "Population annual rate of increase (percent)",
         "Population density",
         "Population mid-year estimates (millions)",
+        "Intentional homicide rates per 100,000",
+        "Robbery at the national level, rate per 100,000 population",
+        "Theft at the national level, rate per 100,000 population"
     ];
 
     static readonly paths = [
@@ -78,6 +81,9 @@ export class Descriptions {
     static readonly desc_population_aged_60_years_old = "Population aged 60+ years old is the percentage of total population aged 60 years old and above.";
     static readonly desc_population_annual_rate_of_increase = "Population annual rate of increase is the exponential rate of growth of midyear population, excluding the effect of migration.";
     static readonly desc_population_mid_year_estimates = "Population mid-year estimates is the number of inhabitants of a country or region as of July 1 of the year indicated. Population is based on the de facto definition of population, which counts all residents regardless of legal status or citizenship.";
+    static readonly desc_intentional_homicides = "Intentional homicides are estimates of unlawful homicides purposely inflicted as a result of domestic disputes, interpersonal violence, violent conflicts over land resources, intergang violence over turf or control, and predatory violence and killing by armed groups.";
+    static readonly desc_robbery_at_the_national_level = "Robbery at the national level is the number of robberies recorded by police in that country per 100,000 population.";
+    static readonly desc_theft_at_the_national_level = "Theft at the national level is the number of thefts recorded by police in that country per 100,000 population.";
 
     static readonly mapping: { [key: string]: string } = {
         "Arable land (percent of total land area)": Descriptions.desc_arable_land,
@@ -98,6 +104,9 @@ export class Descriptions {
         "Population annual rate of increase (percent)": Descriptions.desc_population_annual_rate_of_increase,
         "Population density": Descriptions.desc_population_density,
         "Population mid-year estimates (millions)": Descriptions.desc_population_mid_year_estimates,
+        "Intentional homicide rates per 100,000": Descriptions.desc_intentional_homicides,
+        "Robbery at the national level, rate per 100,000 population": Descriptions.desc_robbery_at_the_national_level,
+        "Theft at the national level, rate per 100,000 population": Descriptions.desc_theft_at_the_national_level,
     }
 }
 
@@ -121,5 +130,8 @@ export class Units {
         "Population annual rate of increase (percent)": "%",
         "Population density": " people per square kilometer",
         "Population mid-year estimates (millions)": "M",
+        "Intentional homicide rates per 100,000": " per 100,000",
+        "Robbery at the national level, rate per 100,000 population": " per 100,000",
+        "Theft at the national level, rate per 100,000 population": " per 100,000",
     }
 }

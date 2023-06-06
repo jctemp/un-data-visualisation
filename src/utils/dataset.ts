@@ -224,6 +224,9 @@ const COLOUR_MAPPING = new Map<string, Scaling>([
     ["Population annual rate of increase (percent)", { type: "Threshold", colourScheme: "Duo", thresholdType: "Custom", thresholds: [-2, -1, 0, 2, 4, Number.MAX_SAFE_INTEGER] }],
     ["Population density", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [10, 50, 100, 200, 400, Number.MAX_SAFE_INTEGER] }],
     ["Population mid-year estimates (millions)", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [1, 10, 100, 200, 500, Number.MAX_SAFE_INTEGER] }],
+    ["Intentional homicide rates per 100,000", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [1, 5, 10, 20, 40, Number.MAX_SAFE_INTEGER] }],
+    ["Robbery at the national level, rate per 100,000 population", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [10, 50, 100, 200, 400, Number.MAX_SAFE_INTEGER] }],
+    ["Theft at the national level, rate per 100,000 population", { type: "Threshold", colourScheme: "Mono", thresholdType: "Custom", thresholds: [125, 250, 500, 1000, 2000, Number.MAX_SAFE_INTEGER] }],
 ]);
 
 export { Dataset, CountryIds };

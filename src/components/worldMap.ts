@@ -55,7 +55,7 @@ function countryMouseClick(_mouseEvent: MouseEvent, d: any) {
         let centroid = WorldMap.pathGenerator.centroid(d);
         let x = centroid[0];
         let y = centroid[1];
-        let k = 3;
+        let k = 3.5;
         let translate = [
             WorldMap.container.clientWidth / 2 - k * x,
             WorldMap.container.clientHeight / 2 - k * y
