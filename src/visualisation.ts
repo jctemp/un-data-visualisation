@@ -100,6 +100,7 @@ let datasetASelection = new Selection({
         ["Population", DatasetOptions.population],
     ],
     useOptionsGroups: true,
+    label: "🅰️",
 });
 
 let datasetYearSelection = new Selection({
@@ -171,7 +172,7 @@ datasetYearSelection.element.onchange = () => {
 
 }
 
-datasetASelection.clone("correlation-actions");
+datasetASelection.clone("correlation-actions", "🅰");
 let datasetBSelection = new Selection({
     parentId: "correlation-actions",
     selectName: "Dataset-B",
@@ -181,6 +182,7 @@ let datasetBSelection = new Selection({
         ["Population", DatasetOptions.population],
     ],
     useOptionsGroups: true,
+    label: "🅱️",
 });
 datasetBSelection.element.value = DatasetOptions.ecology[2];
 CHART_B_LABEL_SUFFIX.value = Units.mapping[DatasetOptions.ecology[2]];

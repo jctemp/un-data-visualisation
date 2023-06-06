@@ -6,4 +6,8 @@
     .selection {
         @apply px-1 py-2 font-semibold border border-black rounded-sm text-ellipsis min-w-0;
     }
+
+    .selection-tuple {
+        @apply flex flex-row items-center gap-2;
+    }
 }
