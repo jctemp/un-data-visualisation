@@ -26,6 +26,7 @@ function countryMouseOver(mouseEvent: MouseEvent, d: any) {
     const offsetY = ((mouseEvent.currentTarget as HTMLElement).parentNode?.parentNode?.parentNode as HTMLElement).offsetTop;
     const offsetX = ((mouseEvent.currentTarget as HTMLElement).parentNode?.parentNode?.parentNode as HTMLElement).offsetLeft;
 
+    if (isNaN(d.properties.value) || d.properties.value === null || d.properties.value === undefined) return;
     d3.select(".tooltip")
         .style("left", mouseEvent.clientX + offsetX + "px")
         .style("top", mouseEvent.clientY - offsetY + scrollY + "px")
