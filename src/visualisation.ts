@@ -285,10 +285,22 @@ scaleSelection.element.onchange = () => {
 // Ranking threshold
 
 const rankingThreshold = new ThresholdNumberOptions("ranking-actions", [1, datasetA.data.size], "Highest Top ");
+const paragraph = document.getElementById("tick-info")!;
 
 rankingThreshold.setCallback(() => {
     let limit = Number(rankingThreshold.control.value);
     ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
+
+    let ticks = Math.floor(Number(rankingThreshold.control.value) / ranking.chart.scales.x.ticks.length);
+    if (ticks === 1) {
+        paragraph.innerText = `Every country is shown.`;
+
+    } else {
+        let suffix = ticks === 2 ? "nd" : ticks === 3 ? "rd" : "th";
+        paragraph.innerText = `Every ${ticks}${suffix} country is shown.`;
+    }
+
+
 });
 
 // ====================================================================================================
@@ -347,5 +359,7 @@ threshold.setThresholds(values);
 
 let limit = Number(rankingThreshold.control.value);
 ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
+let ticks = Math.floor(limit / ranking.chart.scales.x.ticks.length);
+paragraph.innerText = `Every ${ticks}th country is shown.`;
 
 correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, Number(datasetsYearSelection.element.options[0].value)), [datasetA.scaling.type, datasetB.scaling.type]);
