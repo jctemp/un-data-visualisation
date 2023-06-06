@@ -28,7 +28,7 @@ function countryMouseOver(mouseEvent: MouseEvent, d: any) {
 
     d3.select(".tooltip")
         .style("left", mouseEvent.clientX + offsetX + "px")
-        .style("top", mouseEvent.clientY - offsetY + "px")
+        .style("top", mouseEvent.clientY - offsetY + scrollY + "px")
         .transition()
         .duration(500)
         .style("display", "block")
