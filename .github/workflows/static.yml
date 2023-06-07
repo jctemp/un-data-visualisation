@@ -39,7 +39,8 @@ jobs:
       - name: Generate dataset artifacts
         run: |
           cd public/data
-          python ./setup.py
+          pwd
+          python setup.py
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
