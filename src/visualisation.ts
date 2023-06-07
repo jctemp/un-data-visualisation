@@ -17,6 +17,10 @@ import { SearchBar } from "./components/searchbar";
 // get environment variables
 const base = process.env.BASE_URL || "";
 
+if (base === "") {
+    console.warn("BASE_URL environment variable is not set. Using default root path '/'.");
+}
+
 
 let [worldMap, datasetA, datasetB, ids] = await Promise.all([
     WorldMap.init({
