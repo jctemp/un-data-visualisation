@@ -9,6 +9,7 @@ import { CountryIds, Dataset } from "./utils/dataset";
 import { Selection } from "./components/selection";
 import { ThresholdOptions, ThresholdNumberOptions, ColourOptions, CheckBoxOption, ResetOption } from "./components/options";
 import { symmetricLogarithm } from "./utils/scaling";
+import { SearchBar } from "./components/searchbar";
 
 // ====================================================================================================
 // Create the world map and load an initial dataset
@@ -36,6 +37,20 @@ worldMap.setCountryIds(ids);
 let converter = new Converter(countries, continents);
 let ranking = new BarChart("ranking");
 let correlations = new ScatterChart("correlation", ColourSchemes.regions);
+
+// ====================================================================================================
+// Highlight selected country
+
+let countrySelect = new SearchBar('searchbar-container', 'Search for a country...',
+    Array.from(countries.values()));
+
+countrySelect.setCallback((country: string) => {
+    let countryId = ids.map.get(country)?.[0] || "-1";
+    worldMap.highlightCountry(countryId);
+    worldMap.updateChart();
+    ranking.highlightCountry(country);
+    correlations.highlightCountry(country);
+});
 
 // ====================================================================================================
 // Colour scaling function
@@ -215,10 +230,8 @@ datasetBSelection.element.addEventListener("change", async () => {
         datasetsYearSelection.update(correlationYears);
     }
 
-
     // 3. update correlations
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, Number(correlationYears[0])), [datasetA.scaling.type, datasetB.scaling.type]);
-    correlations.updateDotSize(Number(dotSize.control.value))
 });
 
 datasetsYearSelection.element.addEventListener("change", () => {
@@ -325,17 +338,17 @@ checkboxOption.setCallback(() => {
     if (checkboxOption.control.checked) {
         colourOptionsContainer.ariaDisabled = "false";
         resetColours.control.disabled = false;
-        correlations.updateColourScheme(colourOptions.getColours());
+        correlations.updateColourScheme(colourOptions.getColours(), colourOptions.getActive());
     } else {
         colourOptionsContainer.ariaDisabled = "true";
         resetColours.control.disabled = true;
-        correlations.updateColourScheme(["#4287f5", "#4287f5", "#4287f5", "#4287f5", "#4287f5", "#4287f5"]);
+        correlations.updateColourScheme(["#4287f5", "#4287f5", "#4287f5", "#4287f5", "#4287f5", "#4287f5"], [true, true, true, true, true, true]);
     }
 });
 
 resetColours.setCallback(() => {
     colourOptions.setColours(Object.keys(ColourSchemes.regions).map(key => ColourSchemes.regions[key]));
-    correlations.updateColourScheme(colourOptions.getColours());
+    correlations.updateColourScheme(colourOptions.getColours(), colourOptions.getActive());
 });
 
 
@@ -343,7 +356,7 @@ const colourOptions = new ColourOptions("correlation-colour-options",
     Object.keys(ColourSchemes.regions).map(key => [key, ColourSchemes.regions[key]]));
 
 colourOptions.setCallback(() => {
-    correlations.updateColourScheme(colourOptions.getColours());
+    correlations.updateColourScheme(colourOptions.getColours(), colourOptions.getActive());
 });
 
 // ====================================================================================================

@@ -46,7 +46,7 @@ class Converter {
 
         let data1 = ds1.byYear(ds1.years[yearIndex]);
         let data2 = ds2.byYear(ds2.years[yearIndex2]);
-        
+
         if (data1 === null || data2 === null) {
             return {
                 name: [ds1.name, ds2.name],
@@ -180,8 +180,41 @@ class BarChart {
             }
         }
 
+        if (this.current !== null) {
+            // @ts-ignore
+            this.chart.data.datasets[0].backgroundColor![this.current[0]] = this.current[1];
+        }
+
         this.chart.update();
     }
+
+    public highlightCountry(country: string) {
+        if (this.ds === null) return;
+
+        if (this.last !== null) {
+            // @ts-ignore
+            this.chart.data.datasets[0].backgroundColor![this.last[0]] = this.last[1];
+            this.current = null;
+        }
+
+        let index = this.ds.labels.findIndex(a => a === country);
+        if (index === -1) {
+            this.chart.update();
+            return;
+        };
+
+        // @ts-ignore
+        this.last = [index, this.chart.data.datasets[0].backgroundColor![index]];
+        // @ts-ignore
+        this.chart.data.datasets[0].backgroundColor![index] = "#FF0000";
+        // @ts-ignore
+        this.current = [index, this.chart.data.datasets[0].backgroundColor![index]];
+
+        this.chart.update();
+    }
+
+    current: [number, string] | null = null;
+    last: [number, string] | null = null;
 
     ds: ChartDataset<number, string> | null = null;
     chart: Chart<"bar", number[], string>;
@@ -192,10 +225,18 @@ class ScatterChart {
         let html = document.getElementById(elementId) as HTMLCanvasElement | null;
         if (html === null) throw new Error("Could not find ranking canvas");
 
-        this.colourScheme = JSON.parse(JSON.stringify(colourScheme));
+
+        const schema: {
+            [key: string]: [string, boolean];
+        } = {};
+        Object.keys(JSON.parse(JSON.stringify(colourScheme))).forEach((key) => {
+            schema[key] = [colourScheme[key], true];
+        });
+
+        this.colourScheme = schema;
 
         this.chart = new Chart(html, {
-            type: "scatter",
+            type: "bubble",
             data: {
                 labels: [],
                 datasets: []
@@ -235,9 +276,12 @@ class ScatterChart {
         this.chart.data.labels = ds.labels;
 
         this.chart.data.datasets = [{
-            data: working.map(a => a[1]),
+            data: working.map(a => [a[1][0], a[1][1], 3]),
             borderWidth: 1,
-            backgroundColor: ds.region?.map(a => this.colourScheme[a] ?? "#000000") ?? "#000000",
+            backgroundColor: ds.region?.map(a => {
+                let color = this.colourScheme[a] ?? "#000000";
+                return color[1] ? color[0] : "#000000";
+            }) ?? "#000000",
             borderColor: "#000000",
             // @ts-ignore
             tooltip: {
@@ -307,27 +351,59 @@ class ScatterChart {
         }
 
         this.chart.options.scales = scales;
+
+        this.highlightCountry(this.current ?? "");
+    }
+
+    public highlightCountry(country: string) {
+        if (this.ds === null) return;
+
+        if (this.current !== null) {
+            let index = this.ds.labels.findIndex(a => a === this.current);
+            let indexNext = (index + 1) % this.chart.data.datasets[0].data.length;
+            this.chart.data.datasets[0].data[index][2] = this.chart.data.datasets[0].data[indexNext][2];
+            this.current = null;
+        }
+
+        // change the radius of the dot
+        let index = this.ds.labels.findIndex(a => a === country);
+
+        if (index === -1) {
+            this.chart.update();
+            return;
+        }
+
+        this.chart.data.datasets[0].data[index][2] = 10;
+        this.current = country;
+
         this.chart.update();
     }
 
     public updateDotSize(size: number) {
-        this.chart.data.datasets[0].pointRadius = size;
+        this.chart.data.datasets[0].data.forEach(element => {
+            element[2] = size;
+        });;
         this.chart.update();
     }
 
-    public updateColourScheme(colourScheme: string[]) {
+    public updateColourScheme(colourScheme: string[], active: boolean[]) {
         Object.keys(this.colourScheme).forEach((key, index) => {
-            this.colourScheme[key] = colourScheme[index];
+            this.colourScheme[key] = [colourScheme[index], active[index]];
         });
 
-        this.chart.data.datasets[0].backgroundColor = this.ds?.region?.map(a => this.colourScheme[a] ?? "#000000") ?? "#000000";
+        this.chart.data.datasets[0].backgroundColor = this.ds?.region?.map(a => {
+            let color = this.colourScheme[a] ?? "#000000";
+            return color[1] ? color[0] : "#000000";
+        }) ?? "#000000";
         this.chart.update();
     }
 
+    current: string | null = null;
+
     ds: ChartDataset<[number, number], [string, string]> | null = null;
-    chart: Chart<"scatter", [number, number][], string>;
+    chart: Chart<"bubble", [number, number, number][], string>;
     colourScheme: {
-        [key: string]: string;
+        [key: string]: [string, boolean];
     };
 }
 

@@ -217,6 +217,18 @@ class WorldMap {
         }).observe(WorldMap.container);
     }
 
+    public highlightCountry(countryId: string) {
+        console.log(countryId);
+
+        /// add class .country-highlighted to the country with the id countryId
+        d3.select(`#${WorldMap.id}`)
+            .select("g")
+            .selectAll("path")
+            .data(this.data)
+            .classed("country-highlighted", feature => feature.properties.id === countryId);
+
+    }
+
     static container: HTMLElement;
     static pathGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects>;
     static focus: Feature<Geometry, GeoProperties> | null = null;

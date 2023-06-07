@@ -7,6 +7,10 @@ svg {
     stroke-width: .5;
 }
 
+.country-highlighted {
+    fill: #FF0000;
+}
+
 .tooltip {
     position: absolute;
     padding: 7px;

@@ -93,6 +93,7 @@ class ColourOptions {
         this.element = parent;
 
         this.controls = [];
+        this.checkcontrols = [];
         inputs.forEach((values) => {
             const [name, colour] = values;
 
@@ -104,14 +105,21 @@ class ColourOptions {
             colourInput.value = colour;
             colourInput.classList.add("threshold-number");
 
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.classList.add("threshold-checkbox");
+            checkbox.checked = true;
+
             const label = document.createElement("div");
             label.innerText = name;
             label.classList.add("threshold-label");
             label.classList.add("threshold-label-fixed");
 
             this.controls.push(colourInput);
+            this.checkcontrols.push(checkbox);
 
             tuple.append(label);
+            tuple.append(checkbox);
             tuple.append(colourInput);
             parent.append(tuple);
         });
@@ -121,6 +129,14 @@ class ColourOptions {
         this.controls.forEach((colourInput) => {
             colourInput.onchange = callback;
         });
+
+        this.checkcontrols.forEach((checkbox) => {
+            checkbox.onchange = callback;
+        });
+    }
+
+    public getActive(): boolean[] {
+        return this.checkcontrols.map((checkbox) => checkbox.checked);
     }
 
     public getColours(): string[] {
@@ -134,6 +150,7 @@ class ColourOptions {
     }
 
     controls: HTMLInputElement[];
+    checkcontrols: HTMLInputElement[];
     element: HTMLElement;
 }
 
