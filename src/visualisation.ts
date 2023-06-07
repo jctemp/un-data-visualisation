@@ -14,13 +14,9 @@ import { SearchBar } from "./components/searchbar";
 // ====================================================================================================
 // Create the world map and load an initial dataset
 
-// get environment variables
-const base = process.env.BASE_URL || "";
-
-if (base === "") {
-    console.warn("BASE_URL environment variable is not set. Using default root path '/'.");
-}
-
+// TODO: replace this with static import (requires major changes in WorldMap.ts and Dataset.ts as dependencies)
+let pathName = document.location.pathname;
+let base = "/" + pathName.split("/").filter(x => x !== "")[0];
 
 let [worldMap, datasetA, datasetB, ids] = await Promise.all([
     WorldMap.init({
