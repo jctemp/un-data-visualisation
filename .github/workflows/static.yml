@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  BASE: /un-data-visualisation
+  BASE_URL: /un-data-visualisation
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
