@@ -145,7 +145,7 @@ datasetASelection.element.onchange = async () => {
     CHART_A_LABEL_SUFFIX.value = Units.mapping[selectedOption];
 
     // 2. load dataset and update dataset year selection
-    await datasetA.load(path, selectedOption);
+    await datasetA.load(base + path, selectedOption);
     datasetYearSelection.update(datasetA.years.map(year => year.toString()));
     const correlationYears = datasetA.years.map(year => year.toString()).filter(x => datasetB.years.map(year => year.toString()).includes(x));
     if (correlationYears.length === 0) {
@@ -224,7 +224,7 @@ datasetBSelection.element.addEventListener("change", async () => {
     const selectedDatasetB = datasetBSelection.element.value;
 
     // 2. load dataset and update dataset year selection
-    await datasetB.load(DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedDatasetB)!], selectedDatasetB);
+    await datasetB.load(base + DatasetOptions.paths[DatasetOptions.pathMapping.get(selectedDatasetB)!], selectedDatasetB);
     CHART_B_LABEL_SUFFIX.value = Units.mapping[selectedDatasetB];
 
     const correlationYears = datasetA.years.map(year => year.toString()).filter(x => datasetB.years.map(year => year.toString()).includes(x));
