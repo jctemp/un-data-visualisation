@@ -14,7 +14,7 @@
 
 <body>
     <header class="align bg-zinc-900 text-white font-bold shadow-lg flex flex-wrap justify-between items-center gap-8">
-        <img src="/public/logo.png" alt="United Nations dataset" class="invert shadow-xl">
+        <img src="/public/logo.png" alt="United Nations dataset" class="invert">
         <nav class="text-lg flex gap-4">
             <ul class="contents">
                 <li><a aria-current="page" href="/" class="nav-link">Home</a></li>
@@ -44,38 +44,98 @@
         </section>
         <section class="align odd:bg-zinc-100" aria-label="List of features">
             <div class="wrapper max-w-5xl pb-16 mx-auto">
-                <h2 class="text-3xl font-bold pb-8">Overview</h2>
-                <p class="m-4 pb-32">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos similique itaque at eius sit culpa.
-                    Ipsum
-                    eveniet nobis vitae sed sit saepe, alias consequatur dolorem tempore minus architecto aliquid
-                    fugiat.
+                <h2 class="text-3xl font-bold mb-8">Overview</h2>
+                <p class="mb-4">
+                    The visualization is divided into three main sections: a color-coded world map, a ranking based on
+                    the selected dataset, and a scatter plot that enables the plotting of one dataset against another.
+                    Each section offers various interactive features to enhance user experience. Here is a brief
+                    overview of the available features in each section.
                 </p>
-                <p class="m-4 pb-32">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos similique itaque at eius sit culpa.
-                    Ipsum
-                    eveniet nobis vitae sed sit saepe, alias consequatur dolorem tempore minus architecto aliquid
-                    fugiat.
-                </p>
-                <p class="m-4 pb-32">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos similique itaque at eius sit culpa.
-                    Ipsum
-                    eveniet nobis vitae sed sit saepe, alias consequatur dolorem tempore minus architecto aliquid
-                    fugiat.
-                </p>
+                <div class="feature grid grid-cols-2 p-8 items-center shadow-md rounded-md my-8">
+                    <img src="./public/img/dataset_selection.png" alt="">
+                    <p class="m-4">
+                        The visualization consists of two datasets, Dataset A and Dataset B, represented by
+                        corresponding emojis. Users can select a dataset from the available choices within three
+                        categories. Some datasets in the visualization include data from multiple years, allowing users
+                        to explore trends over time. When a dataset is selected, the visualization dynamically updates
+                        and loads default settings tailored explicitly to that dataset. This ensures that users are
+                        provided with relevant and meaningful visual representations of the data they have chosen to
+                        explore.
+                    </p>
+                </div>
+                <div class="feature grid grid-cols-2 p-8 items-center shadow-md rounded-md my-8">
+                    <img src="./public/img/colour_scaling.png" alt="">
+                    <p class="m-4">
+                        In the visualisation's world map and ranking sections, users can adjust the colour scheme and
+                        threshold values according to their preferences. However, it's important to note that when
+                        selecting the linear or logarithmic scale, the colour updates for the ranking section will not
+                        occur. To revert to the default settings, users can utilise the reset button, which will restore
+                        the original configuration of the visualisation. This allows users to easily experiment with
+                        different colour schemes and threshold values while still having the option to return to the
+                        default settings if desired.
+                    </p>
+                </div>
+                <div class="feature grid grid-cols-2 p-8 items-center shadow-md rounded-md my-8">
+                    <img src="./public/img/map_zoom.png" alt="">
+                    <p class="m-4">
+                        In the world map section of the visualisation, users can click on a country to zoom in and view
+                        a more detailed representation of that specific area. Clicking on the country again or selecting
+                        no country will allow users to zoom out and return to the original view. It's important to note
+                        that the zoom level is fixed and cannot be adjusted beyond the predefined levels provided in the
+                        visualisation.
+                    </p>
+                </div>
+                <div class="feature grid grid-cols-2 p-8 items-center shadow-md rounded-md my-8">
+                    <img src="./public/img/datapoint_hovereffect.png" alt="">
+                    <p class="m-4">
+                        All visualisations within the visualisation tool feature a hover effect, which means that when
+                        users hover their cursor over a specific data point, the corresponding value of that data point
+                        will be displayed. This interactive feature enhances the user experience by providing real-time
+                        information and allowing users to explore the details of the data.
+                    </p>
+                </div>
+                <div class="feature grid grid-cols-2 p-8 items-center shadow-md rounded-md my-8">
+                    <img src="./public/img/scatter_plot.png" alt="">
+                    <p class="m-4">
+                        The scatter plot section displays two datasets, with Dataset A on the x-axis and Dataset B on
+                        the y-axis, enabling users to examine their relationship. Countries in the scatter plot are
+                        colour-coded based on their regions, providing visual grouping, and users can toggle the display
+                        of colours for regions or choose to make all countries uniform. The scatter plot offers a reset
+                        button to revert to the default settings, allowing users to start fresh.
+                    </p>
+                </div>
+                <div class="feature grid grid-cols-2 p-8 items-center shadow-md rounded-md my-8">
+                    <img src="./public/img/country_focus.png" alt="">
+                    <p class="m-4">
+                        The visualisation includes a search feature in the bottom right corner. Users can search for a
+                        specific country and highlight it in the visualisations. The arrow icon minimises the search
+                        feature while pressing 'x' removes the focus from the selected country.
+                    </p>
+                </div>
             </div>
         </section>
         <section class="align odd:bg-zinc-100" aria-label="Call to actioin">
-            <div class="wrapper max-w-5xl pb-16 mx-auto">
+            <div class="wrapper max-w-5xl pb-16 mx-auto bg-zinc-700 rounded-md grid grid-cols-4 p-8 items-center">
                 <a href="./pages/visualisation.html"
-                    class="block mt-4 p-4 max-w-max text-xl bg-active text-black font-bold rounded-lg border-zinc-900 border-2">Start
+                    class="block mt-4 p-4 max-w-max text-xl bg-active text-black font-bold rounded-lg justify-self-center">Start
                     exploring</a>
+                <p class="mt-4 text-lg text-white col-span-3">
+                    You can explore the data with this brief overview of the visualisation's features. Enjoy uncovering
+                    insights and gaining a deeper understanding of the information presented. Happy exploring!
+                </p>
             </div>
         </section>
     </main>
 
     <footer class="align bg-zinc-900 text-white">
-        Visit the <a href="" class="font-bold">Github</a> repository.
+        <section>
+            <div class="wrapper max-w-5xl pt-8 pb-32 grid gap-8 mx-auto">
+                <div class="w-max mx-auto">
+                    <img src="/public/logo.png" alt="United Nations dataset" class="invert block mx-auto mb-4">
+                    Visit our <a href="" class="font-bold">Github</a> repository.
+                </div>
+            </div>
+        </section>
     </footer>
 </body>
 
