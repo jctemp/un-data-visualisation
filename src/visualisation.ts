@@ -14,16 +14,20 @@ import { SearchBar } from "./components/searchbar";
 // ====================================================================================================
 // Create the world map and load an initial dataset
 
+// get environment variables
+const base = process.env.BASE_URL || "";
+
+
 let [worldMap, datasetA, datasetB, ids] = await Promise.all([
     WorldMap.init({
         mapId: "map",
         mapTooltipId: "map-tooltip",
-        resourcePath: "/data",
+        resourcePath: base + "/data",
         resource: "world",
     }),
-    Dataset.init(DatasetOptions.paths[0], DatasetOptions.ecology[0]),
-    Dataset.init(DatasetOptions.paths[0], DatasetOptions.ecology[2]),
-    CountryIds.init("/data/datasets", "Country Ids"),
+    Dataset.init(base + DatasetOptions.paths[0], DatasetOptions.ecology[0]),
+    Dataset.init(base + DatasetOptions.paths[0], DatasetOptions.ecology[2]),
+    CountryIds.init(base + "/data/datasets", "Country Ids"),
 ]);
 
 let countries = new Map<string, string>();
