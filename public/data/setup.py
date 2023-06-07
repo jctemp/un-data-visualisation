@@ -70,6 +70,10 @@ optionsFilter = [
     "Sex ratio (males per 100 females)",
     "Surface area (thousand km2)",
     "Total fertility rate (children per women)",
+    "Kidnapping at the national level, rate per 100,000",
+    "Percentage of male and female intentional homicide victims, Female",
+    "Percentage of male and female intentional homicide victims, Male",
+    "Total Sexual Violence at the national level, rate per 100,000",
 ]
 
 for dir in dirs:
@@ -77,14 +81,14 @@ for dir in dirs:
         os.mkdir(dir)
 
 files = [
-    # "https://data.un.org/_Docs/SYB/CSV/SYB65_246_202209_Population%20Growth,%20Fertility%20and%20Mortality%20Indicators.csv",
-    # "https://data.un.org/_Docs/SYB/CSV/SYB65_1_202209_Population,%20Surface%20Area%20and%20Density.csv",
-    # "https://data.un.org/_Docs/SYB/CSV/SYB65_310_202209_Carbon%20Dioxide%20Emission%20Estimates.csv",
-    # "https://data.un.org/_Docs/SYB/CSV/SYB65_145_202209_Land.csv",
-    # "https://data.un.org/_Docs/SYB/CSV/SYB65_230_202209_GDP%20and%20GDP%20Per%20Capita.csv",
-    # "https://data.un.org/_Docs/SYB/CSV/SYB65_264_202209_Patents.csv",
-    # "https://data.un.org/_Docs/SYB/CSV/SYB65_314_202209_Internet%20Usage.csv",
-    # "https://data.un.org/_Docs/SYB/CSV/SYB65_125_202209_Balance%20of%20Payments.csv",
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_246_202209_Population%20Growth,%20Fertility%20and%20Mortality%20Indicators.csv",
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_1_202209_Population,%20Surface%20Area%20and%20Density.csv",
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_310_202209_Carbon%20Dioxide%20Emission%20Estimates.csv",
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_145_202209_Land.csv",
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_230_202209_GDP%20and%20GDP%20Per%20Capita.csv",
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_264_202209_Patents.csv",
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_314_202209_Internet%20Usage.csv",
+    "https://data.un.org/_Docs/SYB/CSV/SYB65_125_202209_Balance%20of%20Payments.csv",
     "https://data.un.org/_Docs/SYB/CSV/SYB65_328_202209_Intentional%20homicides%20and%20other%20crimes.csv",
 ]
 
@@ -140,7 +144,6 @@ def write_dataframe(url: str) -> None:
             data.to_json("{}{}.json".format(dirs[1], name), orient='records')
         elif population:
             data.to_json("{}{}.json".format(dirs[2], name), orient='records')
-        print(name)
 
 # ===========================================================================================================
 
