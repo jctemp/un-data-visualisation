@@ -95,7 +95,7 @@ class SearchBar {
                 resultBox.ariaDisabled = 'true';
             }
 
-            searchbar.addEventListener("input", (e) => {
+            searchbar.addEventListener("input", () => {
                 if (searchbar.value === "") {
                     while (resultBox.firstChild) {
                         resultBox.removeChild(resultBox.firstChild);
