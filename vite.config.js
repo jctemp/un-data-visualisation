@@ -13,5 +13,8 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    base: '/un-data-visualisation/',
+  },
   plugins: [topLevelAwait()],
 })
