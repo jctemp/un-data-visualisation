@@ -182,7 +182,9 @@ class BarChart {
 
         if (this.current !== null) {
             // @ts-ignore
-            this.chart.data.datasets[0].backgroundColor![this.current[0]] = this.current[1];
+            let index = this.ds.labels.findIndex(a => a === this.current[0]);
+            // @ts-ignore
+            this.chart.data.datasets[0].backgroundColor![index] = this.current[1];
         }
 
         this.chart.update();
@@ -193,7 +195,9 @@ class BarChart {
 
         if (this.last !== null) {
             // @ts-ignore
-            this.chart.data.datasets[0].backgroundColor![this.last[0]] = this.last[1];
+            let index = this.ds.labels.findIndex(a => a === this.last[0]);
+            // @ts-ignore
+            this.chart.data.datasets[0].backgroundColor![index] = this.last[1];
             this.current = null;
         }
 
@@ -204,17 +208,17 @@ class BarChart {
         };
 
         // @ts-ignore
-        this.last = [index, this.chart.data.datasets[0].backgroundColor![index]];
+        this.last = [country, this.chart.data.datasets[0].backgroundColor![index]];
         // @ts-ignore
         this.chart.data.datasets[0].backgroundColor![index] = "#FF0000";
         // @ts-ignore
-        this.current = [index, this.chart.data.datasets[0].backgroundColor![index]];
+        this.current = [country, this.chart.data.datasets[0].backgroundColor![index]];
 
         this.chart.update();
     }
 
-    current: [number, string] | null = null;
-    last: [number, string] | null = null;
+    current: [string, string] | null = null;
+    last: [string, string] | null = null;
 
     ds: ChartDataset<number, string> | null = null;
     chart: Chart<"bar", number[], string>;
