@@ -260,6 +260,8 @@ class ScatterChart {
 
     public update(ds: ChartDataset<[number, number], [string, string]>, scaleType: [string, string]) {
         const [scaleTypeDsX, scaleTypeDsY] = scaleType;
+
+        this.scaleType = scaleType;
         this.ds = ds;
 
         let working = Array.from(ds.data.entries());
@@ -277,16 +279,21 @@ class ScatterChart {
             });
         }
 
+        // remove country where region colour is false
+
         this.chart.data.labels = ds.labels;
 
         this.chart.data.datasets = [{
-            data: working.map(a => [a[1][0], a[1][1], 3]),
+            data: working.map(a => [a[1][0], a[1][1], this.size]),
             borderWidth: 1,
             backgroundColor: ds.region?.map(a => {
-                let color = this.colourScheme[a] ?? "#000000";
-                return color[1] ? color[0] : "#000000";
+                let color = this.colourScheme[a] ?? ["#000000", true];
+                return color[1] ? color[0] : "#00000000";
             }) ?? "#000000",
-            borderColor: "#000000",
+            borderColor: ds.region?.map(a => {
+                let color = this.colourScheme[a] ?? ["#000000", true];
+                return color[1] ? "#000000" : "#00000000";
+            }) ?? "#000000",
             // @ts-ignore
             tooltip: {
                 callbacks: {
@@ -356,6 +363,10 @@ class ScatterChart {
 
         this.chart.options.scales = scales;
 
+        this.chart.options.animation = {
+            duration: 0
+        }
+
         this.highlightCountry(this.current ?? "");
     }
 
@@ -384,9 +395,8 @@ class ScatterChart {
     }
 
     public updateDotSize(size: number) {
-        this.chart.data.datasets[0].data.forEach(element => {
-            element[2] = size;
-        });;
+        this.size = size;
+        this.chart.data.datasets[0].data.forEach(a => a[2] = this.size);
         this.chart.update();
     }
 
@@ -395,16 +405,15 @@ class ScatterChart {
             this.colourScheme[key] = [colourScheme[index], active[index]];
         });
 
-        this.chart.data.datasets[0].backgroundColor = this.ds?.region?.map(a => {
-            let color = this.colourScheme[a] ?? "#000000";
-            return color[1] ? color[0] : "#000000";
-        }) ?? "#000000";
-        this.chart.update();
+        this.update(this.ds!, this.scaleType);
     }
 
     current: string | null = null;
 
     ds: ChartDataset<[number, number], [string, string]> | null = null;
+    scaleType: [string, string] = ["Linear", "Linear"];
+    size: number = 3;
+
     chart: Chart<"bubble", [number, number, number][], string>;
     colourScheme: {
         [key: string]: [string, boolean];

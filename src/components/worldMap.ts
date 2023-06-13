@@ -8,8 +8,12 @@ import { CountryIds } from "../utils/dataset";
 import { SingleValue } from "../utils/container";
 
 export const MAP_LABEL_SUFFIX = new SingleValue<string>(" (unknown)");
+let current: Feature<Geometry, GeoProperties> | null = null;
 
-function countryMouseOver(mouseEvent: MouseEvent, d: any) {
+function countryMouseOver(mouseEvent: MouseEvent, d: Feature<Geometry, GeoProperties>) {
+    if (current === d) return;
+    current = d;
+
     d3.selectAll(".country")
         .transition()
         .duration(80)
@@ -26,14 +30,14 @@ function countryMouseOver(mouseEvent: MouseEvent, d: any) {
     const offsetY = ((mouseEvent.currentTarget as HTMLElement).parentNode?.parentNode?.parentNode as HTMLElement).offsetTop;
     const offsetX = ((mouseEvent.currentTarget as HTMLElement).parentNode?.parentNode?.parentNode as HTMLElement).offsetLeft;
 
-    if (isNaN(d.properties.value) || d.properties.value === null || d.properties.value === undefined) return;
+    if (isNaN(current.properties.value) || current.properties.value === null || current.properties.value === undefined) return;
     d3.select(".tooltip")
         .style("left", mouseEvent.clientX + offsetX + 15 + "px")
         .style("top", mouseEvent.clientY - offsetY + scrollY - 28 + "px")
         .transition()
         .duration(500)
         .style("display", "block")
-        .text(`${d.properties.name}: ${d.properties.value}${MAP_LABEL_SUFFIX.value}`);
+        .text(`${current.properties.name}: ${current.properties.value}${MAP_LABEL_SUFFIX.value}`);
 }
 
 function countryMouseLeave() {
@@ -149,6 +153,10 @@ class WorldMap {
         this.data.forEach(country => {
             country.properties[TARGET_PROPERTY] = values.get(country.properties.id) || NaN;
         });
+
+        if (current == null || isNaN(current.properties.value) || current.properties.value === null || current.properties.value === undefined) return;
+        d3.select(".tooltip")
+            .text(`${current.properties.name}: ${current.properties.value}${MAP_LABEL_SUFFIX.value}`);
     }
 
     /**
