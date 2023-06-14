@@ -244,7 +244,6 @@ datasetsYearSelection.element.addEventListener("change", () => {
 
     // 2. update correlations
     correlations.update(converter.toChartDatasetScatter(datasetA, datasetB, datasetB.yearCurrent), [datasetA.scaling.type, datasetB.scaling.type]);
-    correlations.updateDotSize(Number(dotSize.control.value))
 });
 
 
