@@ -30,14 +30,17 @@ function countryMouseOver(mouseEvent: MouseEvent, d: Feature<Geometry, GeoProper
     const offsetY = ((mouseEvent.currentTarget as HTMLElement).parentNode?.parentNode?.parentNode as HTMLElement).offsetTop;
     const offsetX = ((mouseEvent.currentTarget as HTMLElement).parentNode?.parentNode?.parentNode as HTMLElement).offsetLeft;
 
-    if (isNaN(current.properties.value) || current.properties.value === null || current.properties.value === undefined) return;
+    let label = current.properties.name;
+    if (!(isNaN(current.properties.value) || current.properties.value === null || current.properties.value === undefined))
+        label = `${current.properties.name}: ${current.properties.value}${MAP_LABEL_SUFFIX.value}`;
+
     d3.select(".tooltip")
         .style("left", mouseEvent.clientX + offsetX + 15 + "px")
         .style("top", mouseEvent.clientY - offsetY + scrollY - 28 + "px")
         .transition()
         .duration(500)
         .style("display", "block")
-        .text(`${current.properties.name}: ${current.properties.value}${MAP_LABEL_SUFFIX.value}`);
+        .text(label);
 }
 
 function countryMouseLeave() {

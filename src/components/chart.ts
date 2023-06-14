@@ -375,9 +375,11 @@ class ScatterChart {
 
         if (this.current !== null) {
             let index = this.ds.labels.findIndex(a => a === this.current);
-            let indexNext = (index + 1) % this.chart.data.datasets[0].data.length;
-            this.chart.data.datasets[0].data[index][2] = this.chart.data.datasets[0].data[indexNext][2];
-            this.current = null;
+            if (index !== -1) {
+                let indexNext = (index + 1) % this.chart.data.datasets[0].data.length;
+                this.chart.data.datasets[0].data[index][2] = this.chart.data.datasets[0].data[indexNext][2];
+                this.current = null;
+            }
         }
 
         // change the radius of the dot

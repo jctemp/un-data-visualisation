@@ -104,7 +104,7 @@ function calculateThresholds(schema: string[], range: [number, number]): number[
         values = datasetA.scaling.thresholds;
     }
 
-    return values.map(v => Math.round(v));
+    return values.map(v => Math.ceil(v));
 }
 
 // ====================================================================================================
@@ -193,6 +193,9 @@ datasetYearSelection.element.onchange = () => {
     // 3. update ranking
     let limit = Number(rankingThreshold.control.value);
     ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
+
+    // 4    . update ranking
+    rankingThreshold.setRange([1, datasetA.data.size]);
 
 }
 
@@ -307,6 +310,7 @@ const paragraph = document.getElementById("tick-info")!;
 rankingThreshold.setCallback(() => {
     let limit = Number(rankingThreshold.control.value);
     ranking.update(converter.toChartDataset(datasetA, datasetA.yearCurrent, limit), datasetA.scaling.type, threshold.getColours(), threshold.getThresholds());
+    rankingThreshold.control.max = datasetA.data.size.toString();
 
     if (ranking.chart.scales.x.ticks.length === 1 || ranking.chart.scales.x.ticks[1].value === 1) {
         paragraph.innerText = `Every country is shown.`;

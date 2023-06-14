@@ -198,6 +198,16 @@ class ThresholdNumberOptions {
     public setRange(range: [number, number]) {
         this.control.min = range[0].toString();
         this.control.max = range[1].toString();
+
+        const [min, max] = range;
+        this.control.value = max.toString();
+
+        this.control.onkeydown = (e) => {
+            if (e.key === "Enter") {
+                // cursed
+                this.control.value = Math.min(max, Math.max(min, parseFloat(this.control.value))).toString();
+            }
+        }
     }
 
     public setCallback(callback: () => void) {
