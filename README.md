@@ -44,3 +44,67 @@ npm run dev
 ```
 
 > Note: The project is built using [Vite](https://vitejs.dev/), a fast build tool for modern web apps. Vite requires Node.js version >=14.18.
+
+## Project structure
+    
+```bash
+project
+├── README.md
+├── index.html
+├── package-lock.json
+├── package.json
+├── pages
+│   ├── about.html
+│   └── visualisation.html
+├── postcss.config.js
+├── public
+│   ├── data
+│   │   ├── Country Remap.json
+│   │   ├── datasets
+│   │   │   └── ...
+│   │   ├── setup.py
+│   │   └── world.geo.json
+│   ├── duo_color_palett.png
+│   ├── img
+│   │   └── ...
+│   └── logo.png
+├── requirements.txt
+├── src
+│   ├── components
+│   │   ├── chart.css
+│   │   ├── chart.ts
+│   │   ├── options.css
+│   │   ├── options.ts
+│   │   ├── searchbar.css
+│   │   ├── searchbar.ts
+│   │   ├── selection.css
+│   │   ├── selection.ts
+│   │   ├── toggle.css
+│   │   ├── toggle.ts
+│   │   ├── worldMap.css
+│   │   └── worldMap.ts
+│   ├── constants.ts
+│   ├── index.ts
+│   ├── style.css
+│   ├── utils
+│   │   ├── container.ts
+│   │   ├── dataset.ts
+│   │   └── scaling.ts
+│   ├── visualisation.ts
+│   └── vite-env.d.ts
+├── tailwind.config.js
+├── tsconfig.json
+└── vite.config.js
+```
+
+
+## Sources
+
+- [UN Data](https://data.un.org/)
+- [D3.js](https://d3js.org/)
+- [Chart.js](https://www.chartjs.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Google Fonts](https://fonts.google.com/)
+- [Searchbar](https://codepen.io/mey_mnry/pen/QWqPvox)
+- [Choropleth map](https://observablehq.com/@d3/choropleth)
