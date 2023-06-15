@@ -4,13 +4,6 @@
 
 ![](public/logo.png)
 <p>
-    Our mission is to provide a unique platform for visualising and exploring the extensive datasets
-    available on the United Nations Data website</a>.
-    At the UN Data Visualisation Project, data is a
-    powerful tool that allows us to understand the world through statistics. By transforming complex
-    datasets into interactive and engaging visualisations, we aim to make information more accessible,
-    meaningful, and impactful.
-
     Our objective is to create a unique platform for visualising and exploring the vast datasets
     available on the <a href="https://data.un.org/" class="underline">United Nations Data website</a>.
     Data is a potent instrument that helps us comprehend
