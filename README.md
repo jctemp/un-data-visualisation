@@ -1,4 +1,6 @@
-# [UN Data Visualisation Project]
+# UN Data Visualisation Project
+
+**Visit the page https://jctemp.github.io/un-data-visualisation/.**
 
 ![](public/logo.png)
 <p>
