@@ -3,26 +3,32 @@
 ![](public/logo.png)
 <p>
     Our mission is to provide a unique platform for visualising and exploring the extensive datasets
-    available on the <a href="https://data.un.org/" class="underline">United Nations Data website</a>. At the UN Data Visualisation
-    Project, data is a powerful tool that allows us to understand the world through statistics. By
-    transforming complex datasets into interactive and engaging visualisations, we aim to make
-    information more accessible, meaningful, and impactful.
+    available on the United Nations Data website</a>.
+    At the UN Data Visualisation Project, data is a
+    powerful tool that allows us to understand the world through statistics. By transforming complex
+    datasets into interactive and engaging visualisations, we aim to make information more accessible,
+    meaningful, and impactful.
+
+    Our objective is to create a unique platform for visualising and exploring the vast datasets
+    available on the <a href="https://data.un.org/" class="underline">United Nations Data website</a>.
+    Data is a potent instrument that helps us comprehend
+    the world through statistics at the UN Data Visualisation Project. We seek to increase the
+    accessibility, significance, and impact of knowledge by converting complex datasets into interactive
+    and compelling visualisations.
 </p>
 
 <p>
-    Data is at the heart of decision-making processes, policy development, and global initiatives. The
-    United Nations collects and curates vast data across various thematic areas, including population,
-    economics, education, health, environment, and much more. The UN Data website is a central
-    repository of
-    reliable and authoritative statistical information from numerous UN agencies and international
-    organisations.
+    Data is the driving force behind global efforts, policy creation, and decision-making processes. The
+    United Nations gathers and organizes a great amount of data on a variety of subjects, including
+    population, economy, education, health, environment, and many other topics. A central hub for
+    trustworthy and credible statistics data from several UN agencies and international organizations is
+    the UN Data website.
 </p>
 
 <p>
-    We leverage modern technologies like d3.js and chart.js to create performant visualisations. The
-    website
-    is a proof of concept that one can extend to visualise all thematic areas mentioned previously and
-    uncover meaningful patterns and correlations hidden in the raw data.
+    We use cutting-edge tools like d3.js and chart.js to build effective visualizations. The website
+    serves as a proof-of-concept that can be expanded to visualize all the previously listed theme areas
+    and reveal significant patterns and connections that are buried in the raw data.
 </p>
 
 -- Visualisation Team
