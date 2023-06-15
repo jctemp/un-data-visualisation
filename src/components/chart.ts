@@ -202,6 +202,9 @@ class BarChart {
         }
 
         let index = this.ds.labels.findIndex(a => a === country);
+        // @ts-ignore
+        this.current = [country, (index !== -1) ? this.chart.data.datasets[0].backgroundColor![index] : "#FF0000"];
+
         if (index === -1) {
             this.chart.update();
             return;
@@ -211,8 +214,6 @@ class BarChart {
         this.last = [country, this.chart.data.datasets[0].backgroundColor![index]];
         // @ts-ignore
         this.chart.data.datasets[0].backgroundColor![index] = "#FF0000";
-        // @ts-ignore
-        this.current = [country, this.chart.data.datasets[0].backgroundColor![index]];
 
         this.chart.update();
     }
@@ -384,6 +385,7 @@ class ScatterChart {
 
         // change the radius of the dot
         let index = this.ds.labels.findIndex(a => a === country);
+        this.current = country;
 
         if (index === -1) {
             this.chart.update();
@@ -391,7 +393,6 @@ class ScatterChart {
         }
 
         this.chart.data.datasets[0].data[index][2] = 10;
-        this.current = country;
 
         this.chart.update();
     }
